@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on L&#39;Inertie de la carafe</title>
+    <link>/posts/</link>
+    <description>Recent content in Posts on L&#39;Inertie de la carafe</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 08 Feb 2020 20:03:58 +0100</lastBuildDate>
+    
+        <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>BLEH!</title>
+      <link>/posts/first-post/</link>
+      <pubDate>Sat, 08 Feb 2020 20:03:58 +0100</pubDate>
+      
+      <guid>/posts/first-post/</guid>
+      <description>Originally, this article was called &amp;ldquo;Hello world&amp;rdquo;. It&amp;rsquo;s a tradition: The first program you write in a new programming language just prints &amp;ldquo;Hello world!&amp;quot;. I&amp;rsquo;m not really fond of traditions, and now that I think about it, my first programs usually take the shape of
+print(&amp;#34;BLEH&amp;#34;) Or some variation of that.
+So BLEH it is.
+In a way, the most interesting aspect of starting a blog is that I don&amp;rsquo;t even remember hearing the word &amp;ldquo;blog&amp;rdquo; from an actual person, recently.</description>
+    </item>
+    
+  </channel>
+</rss>
