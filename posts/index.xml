@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on L&#39;Inertie de la carafe</title>
     <link>/posts/</link>
     <description>Recent content in Posts on L&#39;Inertie de la carafe</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 08 Feb 2020 20:03:58 +0100</lastBuildDate>
+    <copyright>© Noric Couderc 2020</copyright>
+    <lastBuildDate>Fri, 05 Jun 2020 22:34:09 +0200</lastBuildDate>
     
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Map Every Territory With the Zettelkasten</title>
+      <link>/posts/zettelkasten/</link>
+      <pubDate>Fri, 05 Jun 2020 22:34:09 +0200</pubDate>
+      
+      <guid>/posts/zettelkasten/</guid>
+      <description>They Say / I Say When I was living in Uppsala in 2015, I went to the bookstore with my good friend, Pietari. I remember picking a book on the shelf called They say / I say, written by Gerald Graff and Cathy Birkenstein. At the time, I had picked the book because it was to my self a good example of Americans picking overly simplistic titles for their books, which was obviously a symptom of the intellectual decadence of the country (very nuanced, I know).</description>
+      
+    </item>
     
     <item>
       <title>BLEH!</title>
@@ -17,10 +28,11 @@
       <pubDate>Sat, 08 Feb 2020 20:03:58 +0100</pubDate>
       
       <guid>/posts/first-post/</guid>
-      <description>Originally, this article was called &amp;ldquo;Hello world&amp;rdquo;. It&amp;rsquo;s a tradition: The first program you write in a new programming language just prints &amp;ldquo;Hello world!&amp;quot;. I&amp;rsquo;m not really fond of traditions, and now that I think about it, my first programs usually take the shape of
+      <description>Originally, this article was called &amp;ldquo;Hello world&amp;rdquo;. It&amp;rsquo;s a tradition: The first program you write in a new programming language just prints &amp;ldquo;Hello world!&amp;rdquo;. I&amp;rsquo;m not really fond of traditions, and now that I think about it, my first programs usually take the shape of
 print(&amp;#34;BLEH&amp;#34;) Or some variation of that.
 So BLEH it is.
 In a way, the most interesting aspect of starting a blog is that I don&amp;rsquo;t even remember hearing the word &amp;ldquo;blog&amp;rdquo; from an actual person, recently.</description>
+      
     </item>
     
   </channel>
