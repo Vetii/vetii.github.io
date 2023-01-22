@@ -83,7 +83,7 @@ So it will be a number between 0.0 and 1.0. I&rsquo;m gonna call it <em>incidenc
 <p>Let&rsquo;s start with the likelihood. I will talk about the prior later.
 We&rsquo;re trying to estimate the incidence of flashbacks <em>in general</em>. To estimate that, we have a number of people, and see how many got flashbacks. The likelihood takes the problem backwards. If I had 100 people and knew the incidence is 5%, how many positive cases would I see?</p>
 <p>This probability seems like it&rsquo;s the <em>opposite</em> of what we&rsquo;re looking for, but it&rsquo;s still interesting, because we can try different values of $p$, and see how well it fits the data that we saw!
-Let&rsquo;s imagine we know that $p = 5%$. That means that if we took 100 people, we would probably <em>around</em> 5 people. But seeing 4, or 6, is still somewhat plausible, right?
+Let&rsquo;s imagine we know that $p = 5\%$. That means that if we took 100 people, we would probably <em>around</em> 5 people. But seeing 4, or 6, is still somewhat plausible, right?
 There is a probability distribution for that, it&rsquo;s called the binomial distribution.</p>
 <p>The binomial distribution is the distribution of successes given:</p>
 <ol>
@@ -119,7 +119,7 @@ incidence = 0.03 likelihood = 0.013
 incidence = 0.04 likelihood = 0.003
 incidence = 0.05 likelihood = 0.001
 </code></pre>
-<p>We can see that the likelihood of seeing zero cases is higher for $p = 1%$ than for the higher values.</p>
+<p>We can see that the likelihood of seeing zero cases is higher for $p = 1\%$ than for the higher values.</p>
 <p>The values themselves aren&rsquo;t super important, it&rsquo;s their <em>order</em> that we mostly care about.</p>
 <p>We can go further and try that for any incidence between 0% and 100%.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>incidences <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0.001</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1.0</span>

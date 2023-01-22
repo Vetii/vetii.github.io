@@ -95,7 +95,7 @@ So it will be a number between 0.0 and 1.0. I&amp;rsquo;m gonna call it &lt;em&g
 &lt;p&gt;Let&amp;rsquo;s start with the likelihood. I will talk about the prior later.
 We&amp;rsquo;re trying to estimate the incidence of flashbacks &lt;em&gt;in general&lt;/em&gt;. To estimate that, we have a number of people, and see how many got flashbacks. The likelihood takes the problem backwards. If I had 100 people and knew the incidence is 5%, how many positive cases would I see?&lt;/p&gt;
 &lt;p&gt;This probability seems like it&amp;rsquo;s the &lt;em&gt;opposite&lt;/em&gt; of what we&amp;rsquo;re looking for, but it&amp;rsquo;s still interesting, because we can try different values of $p$, and see how well it fits the data that we saw!
-Let&amp;rsquo;s imagine we know that $p = 5%$. That means that if we took 100 people, we would probably &lt;em&gt;around&lt;/em&gt; 5 people. But seeing 4, or 6, is still somewhat plausible, right?
+Let&amp;rsquo;s imagine we know that $p = 5\%$. That means that if we took 100 people, we would probably &lt;em&gt;around&lt;/em&gt; 5 people. But seeing 4, or 6, is still somewhat plausible, right?
 There is a probability distribution for that, it&amp;rsquo;s called the binomial distribution.&lt;/p&gt;
 &lt;p&gt;The binomial distribution is the distribution of successes given:&lt;/p&gt;
 &lt;ol&gt;
@@ -131,7 +131,7 @@ incidence = 0.03 likelihood = 0.013
 incidence = 0.04 likelihood = 0.003
 incidence = 0.05 likelihood = 0.001
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;We can see that the likelihood of seeing zero cases is higher for $p = 1%$ than for the higher values.&lt;/p&gt;
+&lt;p&gt;We can see that the likelihood of seeing zero cases is higher for $p = 1\%$ than for the higher values.&lt;/p&gt;
 &lt;p&gt;The values themselves aren&amp;rsquo;t super important, it&amp;rsquo;s their &lt;em&gt;order&lt;/em&gt; that we mostly care about.&lt;/p&gt;
 &lt;p&gt;We can go further and try that for any incidence between 0% and 100%.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;incidences &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.001&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;
