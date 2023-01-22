@@ -1,15 +1,690 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on L&#39;Inertie de la carafe</title>
     <link>/categories/</link>
     <description>Recent content in Categories on L&#39;Inertie de la carafe</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>© Noric Couderc 2020</copyright>
+    <copyright>© Noric Couderc 2023</copyright>
     
         <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Bayesian Inference, Choosing Priors, and Magic Mushrooms</title>
+      <link>/posts/bayesian-inference-magic-mushrooms/</link>
+      <pubDate>Sun, 22 Jan 2023 18:41:52 +0100</pubDate>
+      
+      <guid>/posts/bayesian-inference-magic-mushrooms/</guid>
+      <description>&lt;p&gt;There is a nice documentary on Netflix, called &lt;em&gt;Fantastic Fungi&lt;/em&gt;. It&amp;rsquo;s about mushrooms. It describes how mushrooms live, and how they can be used for different things.
+A particular use of mushrooms is described in more detail in the movie, which is the use of psilocybin (an hallucinogenic) in the treatment of depression. Impressively, test subjects and scientists describe that one single high dose of psilocybin led them to a mystical experience that they rated as one of the most significant in their lives [1]. They rank is as high as the birth of their first child, or the death of their parents.&lt;/p&gt;
+&lt;p&gt;The effects on well being seem to be astonishing. They show people who are being treated for cancer explain with a large smile that they&amp;rsquo;re not afraid of death anymore. One scientist explains that this happens after a &lt;em&gt;single&lt;/em&gt; dose.&lt;/p&gt;
+&lt;p&gt;I was intrigued. And when I&amp;rsquo;m intrigued, I go on &lt;a href=&#34;https://en.wikipedia.org/wiki/Psilocybin#Adverse_effects&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;wikipedia&lt;/a&gt;
+. There, I see the following figure:&lt;/p&gt;
+&lt;p&gt;&lt;img  src=&#34;./800px-Drug_danger_and_dependence-no_title.svg.png&#34;
+        alt=&#34;Drug danger and dependence&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;It seems psilocybin is &lt;em&gt;far&lt;/em&gt; less addictive and less dangerous that legal drugs, like caffeine and alcohol. But the lethal dose only tells you about death. I don&amp;rsquo;t know how to interpret this plot: if LSD is dangerous enough to be illegal, how come alcohol is not?&lt;/p&gt;
+&lt;p&gt;Well, death is easy to measure, but the lethal dose is a low bar to pass. It doesn&amp;rsquo;t tell you if you will lose your mind. What are the risks &lt;em&gt;besides&lt;/em&gt; death?&lt;/p&gt;
+&lt;p&gt;As one might expected, there&amp;rsquo;s a lot of shaky information about recreational drugs on the internet (that&amp;rsquo;s one problem of making something illegal, not much research is available). But I did find that the French government runs a &lt;a href=&#34;https://www.ofdt.fr/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;research group&lt;/a&gt;
+ on recreational drug use of French people. I&amp;rsquo;m sure other countries do it too, but since I&amp;rsquo;m French, I looked there.&lt;/p&gt;
+&lt;p&gt;In a pretty interesting report [2], the researchers report on pretty scary stories. One user reported going completely blind for a while. Another reported spending &lt;em&gt;eleven days&lt;/em&gt; stuck in a horrific world, until he got hit by a (very real) car.&lt;/p&gt;
+&lt;p&gt;However, users also report having higher empathy, and saying that it helped them communicate with others, which is pretty consistent other studies say [3] and with what we&amp;rsquo;ve seen in &lt;em&gt;Fantastic Fungi&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Now, those reports are about hallucinogens in general, which includes different molecules, which I presume, have different effects. Regardless, the users report a common fear, which is that of &amp;ldquo;getting stuck&amp;rdquo; with hallucinations forever. A disorder known as hallucinogen persisting perception disorder (HPPD). Wikipedia reports that some user get it after a &lt;em&gt;single use&lt;/em&gt;. Which doesn&amp;rsquo;t sound great.&lt;/p&gt;
+&lt;p&gt;The wikipedia page on HPPD states that HPPD is under-researched. However, I did find a study on HPPD which seemed serious. They tried different hallucinogens on 142 people, and did not find a single case of HPPD, however, 13 users reported flashbacks, which are hallucinations that start, even after the effects of the drug have disappeared.&lt;/p&gt;
+&lt;p&gt;This is when I have to tell you that this long intro was all an excuse to do statistics. I have the following questions:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;What&amp;rsquo;s the probability of getting HPPD?&lt;/li&gt;
+&lt;li&gt;What about flashbacks?&lt;/li&gt;
+&lt;li&gt;How much did we learn from the study?&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;To answer that, we&amp;rsquo;ll use a statistical tool called the Beta-binomial model. It will give us things that the original study doesn&amp;rsquo;t. For example, the scientists report that they don&amp;rsquo;t have a lot of samples, so their report of 9% of cases of flashbacks should be taken with a grain of salt. The beta-binomial model instead gives us a way to quantify how &lt;em&gt;certain&lt;/em&gt; we are about that number.&lt;/p&gt;
+&lt;p&gt;To understand this, you should know what a probability distribution is, and know a bit of programming.&lt;/p&gt;
+&lt;p&gt;Before we start, here are the papers I used in the intro:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Griffiths, Roland R., et al. &amp;ldquo;Mystical-type experiences occasioned by psilocybin mediate the attribution of personal meaning and spiritual significance 14 months later.&amp;rdquo; Journal of psychopharmacology 22.6 (2008): 621-632.&lt;/li&gt;
+&lt;li&gt;FRANCE, E. N. USAGES CONTEMPORAINS DE PLANTES ET CHAMPIGNONS HALLUCINOGÈNES. 2006.&lt;/li&gt;
+&lt;li&gt;MacLean KA, Johnson MW, Griffiths RR. Mystical experiences occasioned by the hallucinogen psilocybin lead to increases in the personality domain of openness. J Psychopharmacol. 2011;25(11):1453-1461. doi:10.1177/0269881111420188&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;We will look in more detail at the following paper.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Müller, F., Kraus, E., Holze, F. et al. Flashback phenomena after administration of LSD and psilocybin in controlled studies with healthy participants. Psychopharmacology 239, 1933–1943 (2022). &lt;a href=&#34;https://doi.org/10.1007/s00213-022-06066-z&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;https://doi.org/10.1007/s00213-022-06066-z&lt;/a&gt;
+&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&#34;müller-et-al-study&#34;&gt;Müller et al. study.&lt;/h1&gt;
+&lt;p&gt;Before we start, here is &lt;a href=&#34;https://www.youtube.com/watch?v=xOhKU9a3RBI&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;some music&lt;/a&gt;
+ to get you in the mood.&lt;/p&gt;
+&lt;h2 id=&#34;what-they-say&#34;&gt;What They Say&lt;/h2&gt;
+&lt;p&gt;The authors  make a difference between &amp;ldquo;flashbacks&amp;rdquo; and HPPD. Flashbacks are &amp;ldquo;episodic reccurences of drug effects after the acute pharmacological effects have subsided&amp;rdquo;. While HPPD is defined as &amp;ldquo;persisting flashback phenomena which cause clinically significant distress&amp;rdquo;. They say that for most of the people who experienced flashbacks, the effects were not distressing, and so are not considered HPPD.&lt;/p&gt;
+&lt;p&gt;They say their studies are placebo-controlled, but they never mention the rate of flashbacks among the control group. They are re-using data from other studies, which I think were placebo controlled, but I think that here, we only consider people who did take the drugs.&lt;/p&gt;
+&lt;h2 id=&#34;methods&#34;&gt;Methods&lt;/h2&gt;
+&lt;p&gt;Müller et al. ran &lt;em&gt;other&lt;/em&gt; studies on the topic, but it seems that they asked them questions about flashbacks every time. So the population of test subjects is composed of different groups. The cocktail of drugs they took and the quantities also varied between groups.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;142 healthy subjects&lt;/li&gt;
+&lt;li&gt;60 received LSD&lt;/li&gt;
+&lt;li&gt;27 received LSD + MDMA + D-amphetamine (that must be quite an afternoon)&lt;/li&gt;
+&lt;li&gt;31 received LSD + psilocybin&lt;/li&gt;
+&lt;li&gt;25 received psilocybin + escitalopram&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;results&#34;&gt;Results&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;They did not find a single person with HPPD. But since the sample is small and the disorder is rare, that&amp;rsquo;s not too surprising (we&amp;rsquo;ll come back to that!)&lt;/li&gt;
+&lt;li&gt;13 out of 142 reported flashbacks.&lt;/li&gt;
+&lt;li&gt;Most of the test subjects reported the flashbacks were pleasant.&lt;/li&gt;
+&lt;li&gt;Flashbacks with LSD: 7&lt;/li&gt;
+&lt;li&gt;Flashbacks with psilocybin: 2&lt;/li&gt;
+&lt;li&gt;Flashbacks with both: 4&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;bayesian-inference&#34;&gt;Bayesian Inference&lt;/h1&gt;
+&lt;p&gt;We&amp;rsquo;re interested in the probability $p$ of getting flashbacks, given that we took hallucinogens.
+So it will be a number between 0.0 and 1.0. I&amp;rsquo;m gonna call it &lt;em&gt;incidence&lt;/em&gt;, though, to make a clear distinction between the probabilities in the stats sense, and proportion of halluginogens users who will get flashbacks, which is the medical question.&lt;/p&gt;
+&lt;p&gt;To study this incidence, we will use Bayesian Inference, I know people are not too familiar with that. So I&amp;rsquo;ll try to explain what it is. But the catchphrase is that Bayesian inference is about how to make math change its mind.&lt;/p&gt;
+&lt;p&gt;To do Bayesian inference, we need two things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The prior: Our current knowledge about this incidence, before we see what the study says.&lt;/li&gt;
+&lt;li&gt;The likelihood: The probability of observing $n$ people with flashbacks, given:
+&lt;ul&gt;
+&lt;li&gt;you have a sample of $N$ people who took hallucinogens,&lt;/li&gt;
+&lt;li&gt;the incidence of get flashbacks is $p$.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;What you get as an output is a distribution over the values that $p$ can take. This is called the &lt;em&gt;posterior&lt;/em&gt; distribution of $p$. It&amp;rsquo;s a distribution over &lt;em&gt;plausible&lt;/em&gt; values of $p$, which match your prior, and the data that you gathered.&lt;/p&gt;
+&lt;p&gt;So, why are they called &amp;ldquo;prior&amp;rdquo; and &amp;ldquo;posterior&amp;rdquo;?
+&amp;ldquo;Prior&amp;rdquo; comes from a latin word that means &amp;ldquo;before&amp;rdquo;. It&amp;rsquo;s the probability of the quantity we&amp;rsquo;re trying to estimate, &lt;em&gt;before&lt;/em&gt; seeing the data.
+&amp;ldquo;Posterior&amp;rdquo; comes from a latin word that means &amp;ldquo;after&amp;rdquo;. It&amp;rsquo;s also a probability distribution over the quantity we&amp;rsquo;re trying to estimate, but this time, &lt;em&gt;after&lt;/em&gt; doing the study.&lt;/p&gt;
+&lt;h2 id=&#34;likelihood&#34;&gt;Likelihood&lt;/h2&gt;
+&lt;p&gt;Let&amp;rsquo;s start with the likelihood. I will talk about the prior later.
+We&amp;rsquo;re trying to estimate the incidence of flashbacks &lt;em&gt;in general&lt;/em&gt;. To estimate that, we have a number of people, and see how many got flashbacks. The likelihood takes the problem backwards. If I had 100 people and knew the incidence is 5%, how many positive cases would I see?&lt;/p&gt;
+&lt;p&gt;This probability seems like it&amp;rsquo;s the &lt;em&gt;opposite&lt;/em&gt; of what we&amp;rsquo;re looking for, but it&amp;rsquo;s still interesting, because we can try different values of $p$, and see how well it fits the data that we saw!
+Let&amp;rsquo;s imagine we know that $p = 5%$. That means that if we took 100 people, we would probably &lt;em&gt;around&lt;/em&gt; 5 people. But seeing 4, or 6, is still somewhat plausible, right?
+There is a probability distribution for that, it&amp;rsquo;s called the binomial distribution.&lt;/p&gt;
+&lt;p&gt;The binomial distribution is the distribution of successes given:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The number of trials&lt;/li&gt;
+&lt;li&gt;The number of successes&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;In our case, a success is more of a failure (you get flashbacks). But the math works regardless.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; Distributions, StatsPlots
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot(Binomial(&lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.05&lt;/span&gt;), label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;low incidence&amp;#34;&lt;/span&gt;, xrange&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot!(Binomial(&lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.25&lt;/span&gt;), label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;high incidence&amp;#34;&lt;/span&gt;, xrange&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img  src=&#34;output_8_0.svg&#34;
+        alt=&#34;svg&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;The plots above show that if the incidence of flashbacks was low (5%, in blue), we would see between 0 and 10 cases of flashbacks in our sample of 100 people. If it was 25% (in orange) instead, we would see (approximately) between 15 and 40 people in our sample of a 100.&lt;/p&gt;
+&lt;p&gt;What&amp;rsquo;s important to notice is that even if the real rate was exactly 5%, we wouldn&amp;rsquo;t observe &lt;em&gt;exactly&lt;/em&gt; 5 people in our sample of a 100. &lt;em&gt;How many&lt;/em&gt; people you use in your sample is also important. That&amp;rsquo;s why studies with more people have more weight.&lt;/p&gt;
+&lt;h1 id=&#34;pseudo-bayesian-approach&#34;&gt;Pseudo-Bayesian Approach&lt;/h1&gt;
+&lt;p&gt;Müller et al did something similar to what we did above. They did not record a single case of HPPD, so they tried different values of $p$ and measured the probability of seeing zero cases.&lt;/p&gt;
+&lt;p&gt;We know the number of trials is 142 (that&amp;rsquo;s the number of people they tested), and that the number of positive cases was zero. We&amp;rsquo;ll vary $p$, and the binomial distribution will tell us how well the information matches.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;incidences &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#ae81ff&#34;&gt;0.01&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.02&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.03&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.04&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.05&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; p_hppd &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; incidences
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    expected_positives &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Binomial(&lt;span style=&#34;color:#ae81ff&#34;&gt;142&lt;/span&gt;, p_hppd)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    probability &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pdf(expected_positives, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    println(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;incidence = &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;$&lt;/span&gt;(round(p_hppd, digits&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;))&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;likelihood = &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;$&lt;/span&gt;(round(probability, digits&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;))&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;incidence = 0.01 likelihood = 0.24
+incidence = 0.02 likelihood = 0.057
+incidence = 0.03 likelihood = 0.013
+incidence = 0.04 likelihood = 0.003
+incidence = 0.05 likelihood = 0.001
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can see that the likelihood of seeing zero cases is higher for $p = 1%$ than for the higher values.&lt;/p&gt;
+&lt;p&gt;The values themselves aren&amp;rsquo;t super important, it&amp;rsquo;s their &lt;em&gt;order&lt;/em&gt; that we mostly care about.&lt;/p&gt;
+&lt;p&gt;We can go further and try that for any incidence between 0% and 100%.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;incidences &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.001&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ps_hppd &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; p_hppd &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; incidences
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    expected_positives &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Binomial(&lt;span style=&#34;color:#ae81ff&#34;&gt;142&lt;/span&gt;, p_hppd)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    append!(ps_hppd, pdf(expected_positives, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot(incidences, ps_hppd,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    xrange&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.10&lt;/span&gt;), xlabel&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;incidence&amp;#34;&lt;/span&gt;, ylabel&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;likelihood&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    fill&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;true,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;HPPD&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img  src=&#34;output_15_0.svg&#34;
+        alt=&#34;svg&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;What this plot says is that the incidence of zero matches really well the data, while an incidence of 0.01 matches the data a bit less well, and as we increase the incidence, it matches less and less well our data.
+As soon as the incidence passes above 3%, this graph says that it&amp;rsquo;s very unlikely that we would have seen zero case of HPPD. So what this tells us, is that the incidence of HPPD is probably less than 3%. If it was higher than that, &lt;em&gt;we would have seen cases&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;We can do the same for flashbacks!
+Müller et al observed 13 people who reported having flashbacks. We&amp;rsquo;ll try different values of $p$ and see how well that matches our data of 13 people / 142.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;incidences &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.001&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ps_flashbacks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; p_flashback &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; incidences
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    expected_positives &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Binomial(&lt;span style=&#34;color:#ae81ff&#34;&gt;142&lt;/span&gt;, p_flashback)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    append!(ps_flashbacks, pdf(expected_positives, &lt;span style=&#34;color:#ae81ff&#34;&gt;13&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot(incidences, ps_flashbacks &lt;span style=&#34;color:#f92672&#34;&gt;./&lt;/span&gt; sum(ps_flashbacks) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     xrange&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.30&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     xlabel&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;incidence&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     ylabel&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;likelihood&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     fill&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;true,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;flashbacks&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;vline!([&lt;span style=&#34;color:#ae81ff&#34;&gt;0.092&lt;/span&gt;], label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Müller&amp;#39;s reported incidence&amp;#34;&lt;/span&gt;, color&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img  src=&#34;output_19_0.svg&#34;
+        alt=&#34;svg&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Now, we see that an incidence of &lt;em&gt;zero&lt;/em&gt; percent is not possible, since we did see some cases.
+A rate of between 5% and 15% is more plausible!&lt;/p&gt;
+&lt;p&gt;Müller reports 9% of cases of flashbacks (in black). It&amp;rsquo;s not surprising our likelihood peaks around 9%, that just means that the math works. However, the difference is that Müller et al. report a &lt;em&gt;single&lt;/em&gt; number, while we can report an interval (5 to 15% are plausible).&lt;/p&gt;
+&lt;h2 id=&#34;how-likelihood-changes&#34;&gt;How Likelihood Changes&lt;/h2&gt;
+&lt;p&gt;In Müller et al&amp;rsquo;s study, they tried several different drugs. The problem is that they have a different number of people, and a different number of cases, for each. How can we compare these numbers?&lt;/p&gt;
+&lt;p&gt;Müller et al&amp;rsquo;s report that 60 subjects were given LSD, and 27 were given LSD + MDMA and D-amphetamine, so 87 subjects in total. In table 1 in the paper, they list 6 studies, and summing the number of subjects for each study, I also find 87 subjects. However, later in the paper, the authors report 90 subjects took LSD. They also report that they found 7 cases of flashbacks after taking LSD, and they say it amounts for 7.8% of the sample, which matches with 90 people. I&amp;rsquo;ll use 87.&lt;/p&gt;
+&lt;p&gt;Here are the numbers.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;LSD: 87 (90?) subjects, 7 flashbacks&lt;/li&gt;
+&lt;li&gt;Psilocybin: 24 subjects, 2 flashbacks&lt;/li&gt;
+&lt;li&gt;LSD + Psilocybin: 28 subjects, 4 flashbacks.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;We will plot three different likelihoods, to see how they change with the number of subjects and cases.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; likelihood(incidences, total_subjects, number_cases)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    ps_flashbacks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; p_flashback &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; incidences
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        expected_positives &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Binomial(total_subjects, p_flashback)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        append!(ps_flashbacks, pdf(expected_positives, number_cases))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# I will normalize the vector, to make different values easier to compare.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; ps_flashbacks &lt;span style=&#34;color:#f92672&#34;&gt;./&lt;/span&gt; sum(ps_flashbacks) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; length(ps_flashbacks)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;incidences &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.001&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.4&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;lik_lsd &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; likelihood(incidences, &lt;span style=&#34;color:#ae81ff&#34;&gt;87&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;lik_psilo &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; likelihood(incidences, &lt;span style=&#34;color:#ae81ff&#34;&gt;24&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;lik_both &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; likelihood(incidences, &lt;span style=&#34;color:#ae81ff&#34;&gt;28&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot(incidences, lik_lsd, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;LSD&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     xlabel&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;incidence&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     ylabel&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;density&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot!(incidences, lik_psilo, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Psilocybin&amp;#34;&lt;/span&gt;, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot!(incidences, lik_both, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;LSD + Psilocybin&amp;#34;&lt;/span&gt;, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img  src=&#34;output_22_0.svg&#34;
+        alt=&#34;svg&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;What does this plot show us?&lt;/p&gt;
+&lt;p&gt;First, As you have more test subjects, your estimate of the plausible valies of the incidence get more precise. The curve for LSD (blue) is narrower than the curve for Psilocybin (red): Since psilocybin was tested on 24 subjects, we learned less about the incidence of flashbacks for psilocybin than for LSD (which was tested on 87 subjects).&lt;/p&gt;
+&lt;p&gt;Second, It seems that flashbacks are more likely when taking LSD + psilocybin than when taking psilocybin alone: The green curve seems shifted to the right (higher incidence). We can see that even though the estimates are quite imprecise.&lt;/p&gt;
+&lt;h1 id=&#34;bayesian-inference-1&#34;&gt;Bayesian Inference&lt;/h1&gt;
+&lt;p&gt;So far, we&amp;rsquo;ve looked at the data in the study. What about other studies? Maybe this particular study is flawed! Because yes, scientists also make mistakes. Science works much better when many different scientists do the same studies. It&amp;rsquo;s very rare that different groups of scientists all make the same mistakes.&lt;/p&gt;
+&lt;p&gt;It would be great if we could add information from what other researchers have found on the topic, and see how it agrees with the existing work.&lt;/p&gt;
+&lt;p&gt;This is when Bayesian inference comes in. It allows us to add some information that we take from somewhere else, and mix it with the likelihood that we just worked with.&lt;/p&gt;
+&lt;p&gt;To do this, we&amp;rsquo;ll use priors.&lt;/p&gt;
+&lt;p&gt;To do the math, I&amp;rsquo;ll use Turing. It&amp;rsquo;s a julia library that&amp;rsquo;s very convenient for doing these kinds of things.
+You don&amp;rsquo;t necessarily have to use Turing for this specific model (because the math works very well). However, if you have more complex models, the Turing code would look pretty much the same (even when the math would be much more difficult).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; Turing
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;the-beta-binomial-model&#34;&gt;The Beta-Binomial Model&lt;/h1&gt;
+&lt;p&gt;We need a prior distribution for the plausible values of $p$ &lt;em&gt;before we look at Müller et al&amp;rsquo;s data&lt;/em&gt;.
+When your likelihood is a binomial distribution, one prior that is convenient is the Beta distribution. It has two parameters, $\alpha$ and $\beta$.
+It&amp;rsquo;s a distribution over numbers between 0 and 1, and it makes the math work very well.
+So, we will use a beta prior, and a binomial likelihood.
+Then, Turing will work, and give us a distribution for the value of $p$, that matches &lt;em&gt;both&lt;/em&gt; our data, and the related work.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The likelihood is a Binomial distribution, with unknown parameter $p$, so we need a prior for it.&lt;/li&gt;
+&lt;li&gt;The prior for $p$ is a Beta distribution, with parameters $\alpha$ and $\beta$.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You have to make a choice of $\alpha$ and $\beta$. We&amp;rsquo;ll see two methods to do that.&lt;/p&gt;
+&lt;h2 id=&#34;including-related-work&#34;&gt;Including Related Work&lt;/h2&gt;
+&lt;p&gt;Bayesians argue that one positive aspect of Bayesian inference is that it provides a principled way to include related work. We can use it to set your priors.&lt;/p&gt;
+&lt;p&gt;But some statisticians are not happy with priors. They would argue that this &amp;ldquo;prior information&amp;rdquo; is dangerous, because who decides how you defined your priors? With priors, you can make the stats say whatever you like!&lt;/p&gt;
+&lt;p&gt;So far, the answer that I obtained from Bayesians ranges from &amp;ldquo;it&amp;rsquo;s complicated&amp;rdquo; to &amp;ldquo;pick up something reasonable&amp;rdquo;. But Müller et al do mention other studies, and they &lt;em&gt;give numbers&lt;/em&gt;.
+Estimates range between 15 and 75% of all users. Personally, I don&amp;rsquo;t think anybody would take these things if the probability of getting HPPD was of 75%, but maybe they mean 75% of users have experienced flashbacks?
+The DSM-V reports a prevalence of 4.2% among users of hallucinogens. That&amp;rsquo;s lower than the 9% that Müller et al found. &lt;em&gt;How can I use these numbers in my stats?&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;In my case, the problem are the parameters of my beta distribution ($\alpha$ and $\beta$).
+It took me a long to find a method on &lt;em&gt;how&lt;/em&gt; to do that.
+The trick is: related work is just &lt;em&gt;more data&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;To show how that works, I&amp;rsquo;ll start with a prior that I did pull from my hat. And then we&amp;rsquo;ll see how I can use the numbers in Müllers study.&lt;/p&gt;
+&lt;h1 id=&#34;pulling-a-prior-from-your-hat&#34;&gt;Pulling A Prior From Your Hat&lt;/h1&gt;
+&lt;p&gt;I&amp;rsquo;m gonna start with Beta(1,10) as a prior, and to be honest it&amp;rsquo;s not terribly realistic.
+But at least you can see the code you can use to run this things. We&amp;rsquo;ll still get a posterior.
+We will then plot the prior, likelihood and posterior with each other. The three things are three estimates of the same quantity (the incidence of flashbacks), but the three methods give different results.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Again, we choose the prior. It&amp;rsquo;s our belief about how often flashbacks happen.&lt;/li&gt;
+&lt;li&gt;The likelihood will give us incidences that match well the observed data.&lt;/li&gt;
+&lt;li&gt;The posterior is a compromise between the two (using Bayes&amp;rsquo; rule)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot(Beta(&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10.0&lt;/span&gt;), label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Prior&amp;#34;&lt;/span&gt;, xlabel&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;incidence&amp;#34;&lt;/span&gt;, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;, fill&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;true)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img  src=&#34;output_31_0.svg&#34;
+        alt=&#34;svg&#34;/&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@model&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; binomial_model(number_people, number_flashbacks)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    p &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10.0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    number_flashbacks &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Binomial(number_people, p)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;binomial_model (generic function with 2 methods)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For this example, I&amp;rsquo;ll use the data for psilocybin only, because that makes it easier to see differences between posterior and likelihood.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Inference&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;chain_simple_prior &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sample(binomial_model(&lt;span style=&#34;color:#ae81ff&#34;&gt;24&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    NUTS(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.65&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Plotting&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot(Beta(&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10.0&lt;/span&gt;), xrange&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.5&lt;/span&gt;), label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;prior&amp;#34;&lt;/span&gt;, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot!(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.001&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;, likelihood(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.001&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;24&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;), label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;likelihood&amp;#34;&lt;/span&gt;, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;density!(chain_simple_prior[&lt;span style=&#34;color:#e6db74&#34;&gt;:p&lt;/span&gt;], label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;posterior&amp;#34;&lt;/span&gt;, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img  src=&#34;output_35_0.svg&#34;
+        alt=&#34;svg&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;You can see that the posterior (in green) has roughly the same shape as the likelihood (in red), but that it&amp;rsquo;s shifted to the right. This shift comes from the prior (in blue).&lt;/p&gt;
+&lt;p&gt;I see a lot of papers who complain that their results are not very valid, because they don&amp;rsquo;t have a lot of data. This is when Bayesian inference is very nice, because as you add more data, the likelihood becomes more and more precise, and the priors &amp;ldquo;wash out&amp;rdquo;. But if you don&amp;rsquo;t have a lot, you still get &lt;em&gt;something&lt;/em&gt;. The minimum number of data points you need is 1.&lt;/p&gt;
+&lt;p&gt;You may wonder why the curve of the posterior is a bit wonky. That is because Turing computes an approximation. It returns a list of plausible values of $p$, in a list. It&amp;rsquo;s not perfectly what the math would suggest. But in many cases, the math would be impossible to do. So we use that for now.&lt;/p&gt;
+&lt;h2 id=&#34;a-better-prior&#34;&gt;A Better Prior&lt;/h2&gt;
+&lt;p&gt;Looking at the posterior, we could say &amp;ldquo;the incidence of flashbacks is between 0 and 25%&amp;rdquo;. Some critics my decide that my posterior looks like that, just because my prior was the curve in blue. If it was different, I would have a different result. How do I justify that?&lt;/p&gt;
+&lt;p&gt;To make things better, I&amp;rsquo;m gonna use the numbers I saw in Müller et al&amp;rsquo;s study.&lt;/p&gt;
+&lt;p&gt;Since I&amp;rsquo;m looking for a way to pick the parameters $\alpha$ and $\beta$ of my Beta distribution. We&amp;rsquo;ll just use the exact same technique. But this time, I&amp;rsquo;m trying to estimate $\alpha$ and $\beta$, based on estimates for $p$ that the study listed.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# We make a model for the prior work.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@model&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; model_prior_work()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    α &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Exponential(&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    β &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Exponential(&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# RELATED WORK&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Source: Studerus&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Stanton and Bardoni&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.23&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Vizeli and Liechti (MDMA)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.065&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# DSM-V&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.042&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Someone suggested 15% (Hermle et al?)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.15&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Someone suggested 75% (wat) (Martinotti et al?)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.75&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# What p would we get, if we looked only at the prior work?&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    p &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; p
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;model_prior_work (generic function with 2 methods)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;chain_prior &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sample(model_prior_work(), NUTS(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.65&lt;/span&gt;), &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# We can get the estimates of p with the &amp;#34;generated quantities&amp;#34; function&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ps &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; generated_quantities(model_prior_work(), chain_prior);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# And now we plot the distribution with related work estimate&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;density(ps &lt;span style=&#34;color:#f92672&#34;&gt;|&amp;gt;&lt;/span&gt; vec, xrange&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;), label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Estimate of p with related work&amp;#34;&lt;/span&gt;, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;,  fill&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;true)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;related_work &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.23&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.065&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.042&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.15&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.75&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;vline!(related_work, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;related work estimates&amp;#34;&lt;/span&gt;, color&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img  src=&#34;output_41_0.svg&#34;
+        alt=&#34;svg&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s a very strange distribution! What we see, though, is that it leaves room for the higher estimates!&lt;/p&gt;
+&lt;h1 id=&#34;tying-it-all-together&#34;&gt;Tying It All Together&lt;/h1&gt;
+&lt;p&gt;We can include the related work evidence directly in our statistical model. To do that, our prior for the incidence (the Beta distribution) will have parameters that we&amp;rsquo;re also trying to estimate. These, &lt;em&gt;will have priors too&lt;/em&gt;. These are called &lt;em&gt;hyper-priors&lt;/em&gt;. The model has three parts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The likelihood is a Binomial distribution, with unknown parameter $p$, so we need a prior for it.&lt;/li&gt;
+&lt;li&gt;The prior for $p$ is a Beta distribution, but it has unknown parameters $\alpha$ and $\beta$, so we need priors for these too.&lt;/li&gt;
+&lt;li&gt;We&amp;rsquo;ll add the related work as evidence, to estimate $\alpha$ and $\beta$.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@model&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; model_with_prior_work(total_n, cases_n)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# I wasn&amp;#39;t sure how to set these values, so I&amp;#39;ll estimate them too!&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    α &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Exponential(&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    β &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Exponential(&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# RELATED WORK&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Source: Studerus&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Stanton and Bardoni&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.23&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Vizeli and Liechti (MDMDA)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.065&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# DSM-V&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.042&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Someone suggested 15% (Hermle et al?)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.15&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Someone suggested 75% (wat)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;0.75&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# THE CURRENT STUDY&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# We use α and β from with more info from the related work&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# to get a probability of HPPD, called p.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    p &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Beta(α, β)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cases_n &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; Binomial(total_n, p)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now I&amp;rsquo;ll use the data for the full study.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;chain_2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sample(model_with_prior_work(&lt;span style=&#34;color:#ae81ff&#34;&gt;142&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;13&lt;/span&gt;), NUTS(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.65&lt;/span&gt;), &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;how-much-did-we-learn&#34;&gt;How Much Did We Learn?&lt;/h1&gt;
+&lt;p&gt;I think we can use the posterior, to estimate how much we learned from the study,
+I&amp;rsquo;ll plot the two estimates of $p$ together.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;density(ps &lt;span style=&#34;color:#f92672&#34;&gt;|&amp;gt;&lt;/span&gt; vec, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Related work only&amp;#34;&lt;/span&gt;, fill&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;true)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;density!(chain_2[&lt;span style=&#34;color:#e6db74&#34;&gt;:p&lt;/span&gt;], label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Related work with current study&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         xrange&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         fill&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;true)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;vline!(related_work, color&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;related work estimates&amp;#34;&lt;/span&gt;, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img  src=&#34;output_48_0.svg&#34;
+        alt=&#34;svg&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;The orange distribution is much narrower, so we&amp;rsquo;ve made big progress! For example, that means that we rejected the work that said that the incidence of flashbacks was roughly 75%.&lt;/p&gt;
+&lt;h1 id=&#34;how-to-report-your-posterior&#34;&gt;How To Report Your Posterior&lt;/h1&gt;
+&lt;p&gt;This model is convenient because you don&amp;rsquo;t have to report a big list of numbers. It&amp;rsquo;s just a beta distribution with two numbers.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;estimated_posterior &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; fit(Beta, chain_2[&lt;span style=&#34;color:#e6db74&#34;&gt;:p&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;Beta{Float64}(α=13.751132773589656, β=131.45206487743914)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plot(estimated_posterior, w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;beta distribution with fitted parameters&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;density!(chain_2[&lt;span style=&#34;color:#e6db74&#34;&gt;:p&lt;/span&gt;], xrange&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.25&lt;/span&gt;), w&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bayesian inference posterior&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img  src=&#34;output_52_0.svg&#34;
+        alt=&#34;svg&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;This shows an excellent match between the two. So if someone wants to make a new study on the topic of flashbacks, they can use the Beta distribution above, as a prior. It includes both the related work and the evidence the experiment!&lt;/p&gt;
+&lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;With all that stuff, what&amp;rsquo;s the incidence, then?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-julia&#34; data-lang=&#34;julia&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# To get an interval, we can use quantiles of the posterior distribution!&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;interval_percents &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; quantile(chain_2[&lt;span style=&#34;color:#e6db74&#34;&gt;:p&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;|&amp;gt;&lt;/span&gt; vec, [&lt;span style=&#34;color:#ae81ff&#34;&gt;0.05&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.95&lt;/span&gt;]) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;interval &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; round&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;(interval_percents)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;2-element Vector{Float64}:
+  6.0
+ 14.0
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The incidence of flashbacks when using hallucinogens is between 6% and 14%. Müller et al. report roughly 9%, but we can also see that there is a bit of uncertainty in that number. I will let you decide if 6 to 14% is a high risk to take or not.&lt;/p&gt;
+&lt;h1 id=&#34;if-youre-bored&#34;&gt;If You&amp;rsquo;re Bored&lt;/h1&gt;
+&lt;p&gt;If you got interested in the bayesian inference part, Richard McElreath has both &lt;a href=&#34;https://youtu.be/guTdrfycW2Q&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;amazing lectures&lt;/a&gt;
+ on the topic, and a &lt;a href=&#34;https://xcelab.net/rm/statistical-rethinking/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;very nice book about that&lt;/a&gt;
+. His book is how I learned all these things.&lt;/p&gt;
+&lt;h2 id=&#34;exercises&#34;&gt;Exercises&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;If you wanted to get a more precise estimate, what would you do?&lt;/li&gt;
+&lt;li&gt;This experiment mixes different molecules (psilocybin, LSD, etc.) Can we make a model that makes estimates, for each different molecule?&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Map Everything With the Zettelkasten</title>
+      <link>/posts/zettelkasten/</link>
+      <pubDate>Fri, 05 Jun 2020 22:34:09 +0200</pubDate>
+      
+      <guid>/posts/zettelkasten/</guid>
+      <description>&lt;h1 id=&#34;they-say--i-say&#34;&gt;They Say / I Say&lt;/h1&gt;
+&lt;p&gt;When I was living in Uppsala in 2015, I went to the bookstore with my good friend, Pietari.
+I remember picking a book on the shelf called &lt;em&gt;They say / I say&lt;/em&gt;, written by Gerald Graff and Cathy Birkenstein. At the time, I had picked the book because it was to my self a good example of Americans picking overly simplistic titles for their books, which was obviously a symptom of the intellectual decadence of the country (very nuanced, I know). I wanted to show it to my friend, but he was a bit further away, browsing through the shelves. So he didn&amp;rsquo;t get to hear thoughtful criticism of the United States with a French accent.&lt;/p&gt;
+&lt;p&gt;I opened the book at a random page and started to read. Now, I don&amp;rsquo;t remember exactly which page it was, but I remember that I instantly learned something interesting. I didn&amp;rsquo;t buy it that day, but I bought it later, and it&amp;rsquo;s one of my favourite books. &lt;em&gt;They Say / I Say&lt;/em&gt; is a book about academic writing. There are many guides like that, but this one basically skips through most of the meat of other academic writing guides to focus on the very &lt;em&gt;reason&lt;/em&gt; why people write in academia. Academia is a place where there is constant debate, and the reason people write is to support or criticize other&amp;rsquo;s views. That&amp;rsquo;s all there is to it. Hence the (actually great) title: &lt;em&gt;They Say / I Say&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Since then, I have started a PhD in Lund, in Southern Sweden. Last autumn, I took a course in (you probably guessed) &lt;em&gt;academic writing&lt;/em&gt;. I had read the book by Graff and Birkenstein and had the basic idea fleshed out, and it was an opportunity to learn more about the details. I was pumped.&lt;/p&gt;
+&lt;p&gt;Now, the course opened on the statement that scientists often dismiss writing until they are forced to do it: They consider it the annoying part. Our instructors seemed sorry that this was the case, and I agreed: Writing is actually good for you, it helps you shape your ideas. So why do scientists loathe writing?&lt;/p&gt;
+&lt;p&gt;Well, now I know why. I &lt;em&gt;hated&lt;/em&gt; that course. Academic writing is just incredibly difficult. The point of science is &lt;em&gt;skepticism&lt;/em&gt;: You should not accept ideas just because they seem to make sense. You need solid evidence. This means that when you paper gets reviewed for publication, you have very demanding readers. Which is a good thing. However, most of them have opinions about what good writing is, which can be quite arbitrary, fuzzy, or contradict one another, here are a few examples:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You should use the appropriate jargon, but not too much otherwise the phrasing gets repetitive.&lt;/li&gt;
+&lt;li&gt;To avoid repetitions, you may want to use metaphors, but these rely on the reader&amp;rsquo;s interpretation, they are ambiguous, so they are forbidden.&lt;/li&gt;
+&lt;li&gt;Your text should be easy to follow, but also very precise: you might have to include a paragraph about what you mean by &lt;em&gt;water is wet&lt;/em&gt;, but without disturbing the flow of the text.&lt;/li&gt;
+&lt;li&gt;You should never use the passive voice, except sometimes.&lt;/li&gt;
+&lt;li&gt;You should not talk to the reader, or use the term &amp;ldquo;we&amp;rdquo;, because some people find it patronizing. I think, dear reader, that it makes the text more lively to acknowledge your existence, but maybe you are starting to think that I am getting a bit sarcastic.&lt;/li&gt;
+&lt;li&gt;If you try really hard to avoid the word &amp;ldquo;we&amp;rdquo;, you will tend to use the passive voice, which as we said, was forbidden.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Eventually, you will stop trying to sell your Excel spreadsheets to a conference and you will instead start looking for a farm to buy, as you&amp;rsquo;ve decided you&amp;rsquo;d rather live a happier countryside life with your sheep and your cows.&lt;/p&gt;
+&lt;span class=&#34;image-container&#34;&gt;&lt;span class=&#34;link&#34; &gt;&lt;a href=&#34;images/pexels-travis-blessing-1390200.jpg&#34; 
+        target=&#34;_blank&#34;&gt;&lt;img class=&#34;img&#34; src=&#34;images/pexels-travis-blessing-1390200.jpg&#34; 
+         alt=&#34;A snippet of the better life you lost to academia&#34;/&gt;&lt;/a&gt;&lt;/span&gt;&lt;span class=&#34;caption&#34;&gt;
+            &lt;p&gt;A snippet of the better life you lost to academia&lt;/p&gt;
+        &lt;/span&gt;
+&lt;/span&gt;
+&lt;p&gt;My main problem with the course was this: Apart from the advice given in &lt;em&gt;They Say / I Say&lt;/em&gt;, the best way to learn academic writing is to practice. Writing is a great tool for intellectual development. It&amp;rsquo;s a great tool to share ideas, but also to form ideas. The problem I have many academic writing guides is that they make writing seem impossible. You are overwhelmed by rules before you even start. These guides focus on what academic writing should &lt;em&gt;be&lt;/em&gt; rather than how you can practice to get to do it. To me, it&amp;rsquo;s a bit like telling you that working out is about having big muscles, and if you don&amp;rsquo;t have them, you failed. The point of working out is to &lt;em&gt;do&lt;/em&gt; it, not to be sad about how others do better. What if we instead tried to find a method that would make writing easier and &lt;em&gt;help&lt;/em&gt; us practice?&lt;/p&gt;
+&lt;h1 id=&#34;the-zettelkasten&#34;&gt;The Zettelkasten&lt;/h1&gt;
+&lt;p&gt;In order to start practicing writing, we are going to stop writing for other people, and start writing for ourselves. By writing notes, we try to map our knowledge in a way we can look at, later.&lt;/p&gt;
+&lt;p&gt;The Zettelkasten (slip-box in German) is a note taking system, invented by Niklas Luhmann, a German sociologist. Over the course of his 35-year long career, he published more than 70 books (so yes, approximately two books a year). When questioned about his writing methods, he mentioned the Zettelkasten several times, but it wasn&amp;rsquo;t until recently that people took a look at it&amp;rsquo;s note and try to understand how it worked. Let&amp;rsquo;s take a look at what it is, why it works, and how to get started.&lt;/p&gt;
+&lt;h2 id=&#34;what-is-it&#34;&gt;What is it?&lt;/h2&gt;
+&lt;p&gt;The reason the name of the method is &amp;ldquo;slip-box&amp;rdquo; is because Luhmann&amp;rsquo;s Zettelkasten was literally a box full of notes. As Luhmann&amp;rsquo;s died in 1998, he started his Zettelkasten without a computer. However, you can also apply the same method with digital notes.&lt;/p&gt;
+&lt;p&gt;The point of each note in your Zettelkasten is to represent &lt;em&gt;one&lt;/em&gt; idea. Each note should have a title, and a short description of your idea, it should approximately fit on a postcard.&lt;/p&gt;
+&lt;p&gt;Now, if you only do that, your notes are just a collection of ideas. You have probably used post-its before, and you&amp;rsquo;ve probably noticed this isn&amp;rsquo;t a great way to save important information. The reason for that is that ideas on their own are not necessarily very useful. Your ideas live inside a void.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s imagine you made some notes about cooking, this is how they would look like:&lt;/p&gt;
+&lt;span class=&#34;image-container&#34;&gt;&lt;span class=&#34;link&#34; &gt;&lt;a href=&#34;images/diagram.svg&#34; 
+        target=&#34;_blank&#34;&gt;&lt;img class=&#34;img&#34; src=&#34;images/diagram.svg&#34; width=&#34;80%&#34;/&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/span&gt;
+&lt;p&gt;The basic idea which makes the Zettelkasten powerful is that we can add structure
+to these unstructured ideas. We do it by creating &lt;em&gt;links&lt;/em&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;knowledge--ideas--structure&#34;&gt;Knowledge = Ideas + Structure&lt;/h3&gt;
+&lt;p&gt;The traditional way to structure knowledge is that of a hierarchy. This is the type of structure you see when going to your local library, topics &amp;ldquo;branch out&amp;rdquo;, from the general to the specific. This approach was also often used when classifying animals, as you can see in this drawing from Ernst Haeckel.&lt;/p&gt;
+&lt;span class=&#34;image-container&#34;&gt;&lt;span class=&#34;link&#34; &gt;&lt;a href=&#34;images/Tree_of_life_by_Haeckel.jpg&#34; 
+        target=&#34;_blank&#34;&gt;&lt;img class=&#34;img&#34; src=&#34;images/Tree_of_life_by_Haeckel.jpg&#34;/&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/span&gt;
+&lt;p&gt;I think hierarchies work well when you want to make exhaustive knowledge (about the whole world) available to many people. But the point of the Zettelkasten is to make specialized knowledge (what you are interested in) available to &lt;em&gt;you&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;The problem is, when you are trying to understand a topic, you do not know in advance how important it will be in the area you are currently looking at, and you do not know in advance what parts of the concept will be most interesting to you.&lt;/p&gt;
+&lt;p&gt;What Luhmann realized is that a better kind of structure for your personal knowledge is that of &lt;em&gt;relationships&lt;/em&gt;. Some ideas are similar to each other, some support the same argument, some ideas are contradictory to one another. All of these are relationships are &lt;em&gt;extremely&lt;/em&gt; interesting and we want a system that allows us to play with them. We don&amp;rsquo;t want to separate ideas, we want to connect them.&lt;/p&gt;
+&lt;p&gt;Therefore, your knowledge about recipes should look more like this:&lt;/p&gt;
+&lt;span class=&#34;image-container&#34;&gt;&lt;span class=&#34;link&#34; &gt;&lt;a href=&#34;images/diagram2.svg&#34; 
+        target=&#34;_blank&#34;&gt;&lt;img class=&#34;img&#34; src=&#34;images/diagram2.svg&#34; width=&#34;80%&#34;/&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/span&gt;
+&lt;p&gt;When looking at this picture, we can see an interesting link between bread and pasta: they are made from the &lt;em&gt;same ingredients&lt;/em&gt;. How interesting this connection is depends of the context, but we would like a system that allows us to keep track of these connections.&lt;/p&gt;
+&lt;p&gt;The way Luhmann implemented this was to have a &lt;em&gt;unique&lt;/em&gt; identifier (let&amp;rsquo;s say, a number) for each note. Each note would also contain a list of identifiers of other notes, these are the links you could follow. To sum up, each note would have:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A title&lt;/li&gt;
+&lt;li&gt;A unique identifier (usually a number)&lt;/li&gt;
+&lt;li&gt;The content of the note&lt;/li&gt;
+&lt;li&gt;Sources (if you got the idea from a book)&lt;/li&gt;
+&lt;li&gt;Links to other notes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To make this more concrete, here is an example of the note possible for bread:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Title: BREAD
+ID: 1
+
+Some delicious food you can make with flour and water.
+
+SEE ALSO:
+- Water (2)
+- Flour (3)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &amp;ldquo;see also&amp;rdquo; section contains the links, each link is described with the name of the note and the ID between parentheses.&lt;/p&gt;
+&lt;p&gt;&amp;hellip; And that&amp;rsquo;s pretty much all there is to it. Even though Luhmann mentioned that the Zettelkasten was a very useful thinking tool for himself, when looking at the system, it doesn&amp;rsquo;t seem obvious that this was his secret sauce. I mean, he might just have been extremely smart. So why would this method work?&lt;/p&gt;
+&lt;h2 id=&#34;why-does-it-work&#34;&gt;Why does it work?&lt;/h2&gt;
+&lt;p&gt;I have to say that when I first heard of the Zettelkasten, it wasn&amp;rsquo;t really hard to convince me. My experience as a programmer showed me that thinking of something in terms of &lt;em&gt;relationships&lt;/em&gt; is usually a useful approach. Graphs (or networks) are a very versatile concept in computer science. We use graphs and networks to solve all kinds of problems: Internet pages are related with links, cities are related with roads, etc.  In fact, unless you have never used the internet, you may have noticed that the Internet is mostly structured through links. The PageRank algorithm (used by Google to rank web-pages) also used links between pages to evaluate the quality of content in a web-page.&lt;/p&gt;
+&lt;p&gt;In her wonderful book &lt;em&gt;The Art of Logic&lt;/em&gt;, Eugenia Cheng also mentions the importance of focusing on relationships between concepts, this time in Mathematics research:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The idea of considering things in relation to each other is one of the important basic principles of modern mathematics. This has not always been the emphasis, but relatively new research has brought it to  the forefront the about the mid twentieth century. We see that looking at how things or people relate to one another is often the key to understanding a situation, more than looking at the intrinsic characteristics of those things or people. This is true at many different levels and scales, from how countries interact in the world, downs to how people interact in a relationship.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;If we look to literature, I was surprised to find a similar argument in the words of Antoine de Saint-Exupéry in his book &lt;em&gt;Citadelle&lt;/em&gt;, known as &lt;em&gt;The Wisdom of the Sands&lt;/em&gt; in English (translation mine):&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;For nothing has a meaning by itself, but for all things, true meaning comes from structure. Your stone-cold face is not the sum of a nose, an ear, a chin and another ear, but the muscles that tie them together. The images of a poem are neither in the star nor the number seven, nor the fountain, but in the knot that I compose by forcing the seven stars to bathe in the fountain. And certainly one needs connected objects for the link to be seen. But its power does not lie in the objects.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In other words, when I first heard about the method, my first reaction was: &amp;ldquo;This is it!&amp;rdquo;. But maybe you, dear reader, are not like me. If you went to university (or even high school), you probably have tried note-taking methods of your own. Many exist, from underlining and annotating books, to more structured things like &lt;a href=&#34;https://en.wikipedia.org/wiki/SQ3R&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;SQ3R&lt;/a&gt;
+ (which stands for Survey, Question, Read, Retrieve, Review) or &lt;a href=&#34;https://en.wikipedia.org/wiki/Cornell_Notes&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Cornell Notes&lt;/a&gt;
+. What would make the Zettelkasten special? To try the see what the Zettelkasten gives us, we can try to make up a theoretical perfect note-taking system and see how the Zettelkasten relates to that hypothetical system.&lt;/p&gt;
+&lt;h2 id=&#34;the-perfect-note-taking-system&#34;&gt;The perfect note-taking system&lt;/h2&gt;
+&lt;p&gt;In her course &lt;a href=&#34;https://www.coursera.org/learn/learning-how-to-learn&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Learning How to Learn&lt;/a&gt;
+ on Coursera, Barbara Oakley uses recent research about the brain to try to help us learn better. With her help, we can try to set up our perfect note-taking system. When comparing the Zettelkasten to other note-taking methods, I will also draw from Sönke Ahrens&amp;rsquo; &lt;em&gt;How to Take Smart Notes&lt;/em&gt;, which is a book about the Zettelkasten, filled to the brim with advice on how to learn. Ahrens and Oakley often sing in unison, and it&amp;rsquo;s beautiful.&lt;/p&gt;
+&lt;h3 id=&#34;tackle-procrastination&#34;&gt;Tackle Procrastination&lt;/h3&gt;
+&lt;p&gt;If you want to get anything done, the best-note taking is one you actually use. Writing should be &lt;em&gt;easy&lt;/em&gt;. To make writing easy, we could do two things.&lt;/p&gt;
+&lt;p&gt;First, we could just write less. This might seem counter-intuitive, but writing very little can be better than writing a lot (and it&amp;rsquo;s much better than not writing at all). We would like to have a system that allows us to write small notes about half-baked ideas. We want to make it easy to accumulate knowledge in paper form.&lt;/p&gt;
+&lt;p&gt;Second, we should focus on the &lt;em&gt;process&lt;/em&gt; of writing, not so much on the result: Indeed, we often procrastinate because we overestimate how hard a task is, or how long it takes. Focusing on process means that you will &lt;em&gt;get started&lt;/em&gt;. Both Oakley and Ahrens agree on the importance of a process to avoid procrastination. The famous &lt;a href=&#34;https://en.wikipedia.org/wiki/Pomodoro_Technique&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Pomodoro technique&lt;/a&gt;
+ is also based on this idea.&lt;/p&gt;
+&lt;p&gt;I think the reason people like to have a &lt;em&gt;system&lt;/em&gt; for taking notes is that it shift the focus from the product, to a clear process. The whole point of SQ3R is to separate a fuzzy &amp;ldquo;read book and take notes&amp;rdquo; into a sequence of precise steps: Survey, Question, Read, Recite and Review. Cornell notes are more focused on the product, but they also divide the task of &amp;ldquo;reading&amp;rdquo; or &amp;ldquo;research&amp;rdquo; into the production of something tangible. The Zettelkasten works like that too: the point is to add a few notes about new concepts each day. &amp;ldquo;Reading&amp;rdquo; becomes &amp;ldquo;fishing for ideas&amp;rdquo;.&lt;/p&gt;
+&lt;h3 id=&#34;encourage-elaboration&#34;&gt;Encourage Elaboration&lt;/h3&gt;
+&lt;p&gt;A universal way to define &lt;em&gt;any&lt;/em&gt; white-collar job is as follows: White collar workers create problems which they try to solve by either working themselves or giving them to someone else, until the problems are given to blue-collar workers, which will solve them.&lt;/p&gt;
+&lt;p&gt;I am a PhD student in computer science, so most of the problems I create for myself are computer related. The question is, how do I solve them?&lt;/p&gt;
+&lt;p&gt;A method that works really well is called &lt;strong&gt;rubber duck debugging&lt;/strong&gt;, it works as follows:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Buy a rubber duck (the bathtub kind).&lt;/li&gt;
+&lt;li&gt;Explain your problem to the duck.&lt;/li&gt;
+&lt;li&gt;Realize what the solution to your problem is, in a glorious epiphany.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;span class=&#34;image-container&#34;&gt;&lt;span class=&#34;link&#34; &gt;&lt;a href=&#34;images/pexels-quang-nguyen-vinh-2133060.jpg&#34; 
+        target=&#34;_blank&#34;&gt;&lt;img class=&#34;img&#34; src=&#34;images/pexels-quang-nguyen-vinh-2133060.jpg&#34; 
+         alt=&#34;A crowd listens to the giant rubber duck&amp;amp;rsquo;s everlasting wisdom&#34;/&gt;&lt;/a&gt;&lt;/span&gt;&lt;span class=&#34;caption&#34;&gt;
+            &lt;p&gt;A crowd listens to the giant rubber duck&amp;rsquo;s everlasting wisdom&lt;/p&gt;
+        &lt;/span&gt;
+&lt;/span&gt;
+&lt;p&gt;It&amp;rsquo;s such a useful method &lt;a href=&#34;https://rubberduckdebugging.com/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;it even has its own website&lt;/a&gt;
+. But how could a rubber duck be related to our intellectual development? And how does this relate to note-taking?&lt;/p&gt;
+&lt;p&gt;The reason rubber duck debugging and writing notes work is because they encourage &lt;strong&gt;elaboration&lt;/strong&gt;: Putting concepts into your own words.&lt;/p&gt;
+&lt;p&gt;Indeed, in her course, Oakley describes learning as the formation of small &lt;strong&gt;mental chunks&lt;/strong&gt;: Units of information that describe a concept. For instance, getting dressed is a lot of complicated actions, but in your head, it&amp;rsquo;s described with a single word, a single operation.&lt;/p&gt;
+&lt;p&gt;These chunks are created automatically when you sleep or exercise after practicing what you want to learn. There are however a few things to understand to create chunks effectively.&lt;/p&gt;
+&lt;p&gt;First, you need to avoid what Oakley calls the &lt;strong&gt;illusion of competence&lt;/strong&gt;, which is when you &lt;em&gt;think&lt;/em&gt; that you understand a concept. It is therefore important to test yourself, even when you think you understand something. This is why you never learns anything at museums. Nobody tests you.&lt;/p&gt;
+&lt;p&gt;Second, you should practice recalling what you want to learn, I think most people practice this correctly when they want to learn something. But it&amp;rsquo;s very important to &lt;em&gt;actually try&lt;/em&gt; to remember it before re-reading it.&lt;/p&gt;
+&lt;p&gt;When we look at our note-taking system, we can now see that elaboration helps creating new chunks by providing a way to test yourself, and a way to spell your chunks out loud. Writing a short note about a concept helps you creating a small chunk, which will be easier to remember. To me, this idea is quite related to what Chris Ford talks about in his talk &lt;a href=&#34;https://www.youtube.com/watch?v=EK4qctJOMaU&amp;amp;t=230s&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;African Polyphony &amp;amp; Polyrhythm&lt;/a&gt;
+, in which he states that modeling is compression: You &lt;em&gt;really&lt;/em&gt; understand something when you can describe it in a few words (Ford is talking about Music, but I think this applies in general).&lt;/p&gt;
+&lt;p&gt;When we look at the Zettelkasten, we can see a natural correspondence between mental chunks and our notes: Each mental chunk should have its own note. The whole process of adding notes to the Zettelkasten is about identifying concepts (making mental chunks), and mapping their relationships with other concepts.&lt;/p&gt;
+&lt;p&gt;If we compare with other note-taking systems, we see that most of them push you to elaborate on ideas. For instance, Cornell notes have a &amp;ldquo;summary&amp;rdquo; section and a &amp;ldquo;keyword / questions&amp;rdquo;. Filling these sections urges you to find more compact ways to describe the material, which stimulates creating mental chunks. The summary section will also help the reader when trying to &lt;em&gt;retrieve&lt;/em&gt; information. In that sense, I think that Cornell Notes and the Zettelkasten are more or less equivalent when it comes to encouraging elaboration.&lt;/p&gt;
+&lt;h3 id=&#34;prevent-confirmation-bias&#34;&gt;Prevent Confirmation Bias&lt;/h3&gt;
+&lt;p&gt;If you&amp;rsquo;re going to write about anything important, chances are that you are trying to take a position in an existing debate, and present your opinion. According to Graff and Birkenstein in &lt;em&gt;They Say / I Say&lt;/em&gt;, weighing arguments and taking a position is the whole point of academic writing. Unfortunately, your brain is not necessarily on your side: We all suffer from &lt;a href=&#34;https://en.wikipedia.org/wiki/Confirmation_bias&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;confirmation bias&lt;/a&gt;
+, which is a tendency to be less skeptical of information supporting our prior beliefs: We look for people who think like us, and information which agrees with what we already think.&lt;/p&gt;
+&lt;p&gt;When we argue for something, considering all kinds of evidence is a good method to get to the truth. It is therefore useful to take sometimes the role of the Naysayer and try to attack the perspective you actually want to defend.&lt;/p&gt;
+&lt;p&gt;Even if you work in advertising or politics (in which case the truth might not be your main concern), you probably want to look at all sides of an issue, because if you don&amp;rsquo;t, your competitors or opponents will. A very effective move in public debating in general is to present the strongest version of your opponent argument, and then show that even if you take the best version of their argument, they are still wrong. It&amp;rsquo;s therefore very important to understand what your opponents are saying. In other words (those of F. Scott Fitzgerald):&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The test of a first-rate intelligence is the ability to hold two opposed ideas in mind at the same time and still retain the ability to function.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;What does this mean for our note-taking? This means that we should have the possibility to be a naysayer and add knowledge to our knowledge base &lt;em&gt;even if it contradicts existing knowledge in the base&lt;/em&gt;. Most writing guides for academic writing completely miss this point, because they suggest you to choose the topic of your article &lt;em&gt;before doing the research&lt;/em&gt;. Ahrens sums up the issue nicely:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If insight becomes a threat to your academic or writing success, you are doing it wrong.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In my opinion, the Zettelkasten is the best system I know for handling controversy. The reason for that is that the Zettelkasten is extremely modular: The content does not need to be in the right order for you to absorb it. If a new idea comes up, you make a new note, and add it to your slip box. Cornell Notes and SQ3R target college students, and I think they tend to be a poor fit if the information is not provided in &amp;ldquo;the right order&amp;rdquo;. Let&amp;rsquo;s take an example.&lt;/p&gt;
+&lt;p&gt;I never studied economics, but let&amp;rsquo;s imagine that you spend three years studying economics, with the assumption that people are rational agents who try to maximize their utility. Some day, you hear about &lt;a href=&#34;https://en.wikipedia.org/wiki/Behavioral_economics&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;behavioral economics&lt;/a&gt;
+, which challenge this assumption. If you used Cornell Notes or SQ3R, you now have a very concrete problem: There&amp;rsquo;s no space in your paper notes to add this new knowledge. You&amp;rsquo;d have to grab a new sheet of paper and make a reference to the other notes. If this happens very often, you&amp;rsquo;ll end up making a Zettelkasten-like system. You may solve this problem by taking notes on the computer, but you&amp;rsquo;d run into another problem: Adding information destroys the original structure of the lecture or presentation you attended. With the Zettelkasten, all the structure is preserved with links, and you just follow the links you&amp;rsquo;re interested in.&lt;/p&gt;
+&lt;h3 id=&#34;encourage-creativity&#34;&gt;Encourage Creativity&lt;/h3&gt;
+&lt;p&gt;The nature of Creativity is a bit hard to pinpoint, but I think it&amp;rsquo;s fair to say we all want it. Unfortunately, trying to force oneself to be creative never really works. We can&amp;rsquo;t control creativity, so the only ways we found to foster it are somewhat counter-intuitive.&lt;/p&gt;
+&lt;span class=&#34;image-container&#34;&gt;&lt;span class=&#34;link&#34; &gt;&lt;a href=&#34;images/pexels-ivan-bertolazzi-2681319.jpg&#34; 
+        target=&#34;_blank&#34;&gt;&lt;img class=&#34;img&#34; src=&#34;images/pexels-ivan-bertolazzi-2681319.jpg&#34; 
+         alt=&#34;Motivational signs like these are an excellent way to increase FRUSTRATION&#34;/&gt;&lt;/a&gt;&lt;/span&gt;&lt;span class=&#34;caption&#34;&gt;
+            &lt;p&gt;Motivational signs like these are an excellent way to increase FRUSTRATION&lt;/p&gt;
+        &lt;/span&gt;
+&lt;/span&gt;
+&lt;p&gt;In her course, Oakley mentions that the brain has two modes of thinking: focused, and diffuse. The focused mode is what you think it is: You focus on the problem and try to solve it. The diffuse mode is this more meditative mode we sometimes get into: daydreaming. In this diffuse mode of thinking, Oakley argues, our brains &lt;em&gt;are working&lt;/em&gt;. Ideas bounce a bit everywhere, and sometimes meet to create new, unexpected ideas, which can be very useful. To get into this mode, we need to do things that don&amp;rsquo;t look at all like working, or studying. For example, &lt;a href=&#34;https://www.apa.org/pubs/journals/releases/xlm-a0036577.pdf&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Opezzo and Schwartz showed that taking walks increased our creative thinking abilities&lt;/a&gt;
+. Oakley also mentions how Thomas Edison and Salvador Dalí used naps to get new ideas, as one often gets into a diffuse mode of thinking just before sleep, a state known as &lt;a href=&#34;https://en.wikipedia.org/wiki/Hypnagogia&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;hypnagogia&lt;/a&gt;
+.&lt;/p&gt;
+&lt;p&gt;When it comes to creativity, the flexibility of the Zettelkasten becomes extremely useful. Instead of trying to stimulate ideas with things like brainstorming, the Zettelkasten allows you to save an idea when you have it (for example, after a nap). You may think this leads to a mess of random notes, but adding links to other related notes makes this mess much easier to navigate. In the Zettelkasten, you don&amp;rsquo;t need to write an introduction to an idea, you can just write it down, and you&amp;rsquo;ll add context later.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s take an example of something that requires a lot of creativity: &lt;a href=&#34;https://en.wikipedia.org/wiki/Worldbuilding&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;world building&lt;/a&gt;
+. You could either try to brainstorm ideas about a specific topic, which might work, but can be very frustrating when it doesn&amp;rsquo;t. With the Zettelkasten, just do something else! If reading an article in the news makes you think of a good short story, you can write it down and put it in the slip-box. Your idea might not be fully formed yet, but you won&amp;rsquo;t lose it. When you need to be creative, no need to brainstorm anymore. The Zettelkasten acts as a mind palace in which you can look for interesting stories to tell.&lt;/p&gt;
+&lt;p&gt;If you are instead a non-fiction writer, or an academic, you may wonder how the Zettelkasten might help you create new ideas. After all, how would gathering tons of disparate ideas and connect them lead to the creation of &lt;em&gt;completely new ideas&lt;/em&gt;? I would answer that completely new ideas don&amp;rsquo;t really exist. Lots of new ideas, however, are created by analogy or opposition between already existing ideas, or giving a new interpretation of a concept in a new context.&lt;/p&gt;
+&lt;p&gt;In her course, Oakley mentions something called &lt;a href=&#34;https://en.wikipedia.org/wiki/Einstellung_effect&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Einstellung effect&lt;/a&gt;
+: as we get more experience in solving a problem, we tend to use the methods we know while a newcomer might try a simpler, more effective solution. She argues that the Einstellung effect is the reason why most important discoveries are done by young scientists, who still have an open mind. Education tends to encourage the Einstellung effect, since courses are usually structured to focus on one specific topic: They try to &lt;em&gt;separate&lt;/em&gt; knowledge instead of linking it. Traditional note-taking tends to be structured in the same way. It looks nicer, but have you ever looked at very old notes? The Zettelkasten method encourages you to treat your knowledge as one, massive whole instead, in which connections are free to form. What you learned in high school biology can be related to what you&amp;rsquo;ve learned last week in a presentation.&lt;/p&gt;
+&lt;h2 id=&#34;how-do-i-do-it&#34;&gt;How do I do it?&lt;/h2&gt;
+&lt;p&gt;After I started using the Zettelkasten method, I loved it so much I wanted to force all my friends to try it. How does one get started, though?&lt;/p&gt;
+&lt;p&gt;Thankfully, the simplicity of the system means that you do not need a
+lot: Luhmann&amp;rsquo;s Zettelkasten was built with pen, paper cards and a box. All
+that mattered was to follow the structure. If you are more interested
+in digital notes, it&amp;rsquo;s very interesting to see how many note-taking
+apps (also called personal wikis) there are.&lt;/p&gt;
+&lt;p&gt;So. many. of. them.&lt;/p&gt;
+&lt;p&gt;Unfortunately, most of them do not have the key feature necessary for
+building a Zettelkasten: creating links between notes should be
+&lt;em&gt;quick&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;There are a few open source ones, which I and my friends tried (I only list the software where linking between notes is easy enough for my taste):&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.zettlr.com/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Zettlr&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://zim-wiki.org/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Zim&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://tiddlywiki.com/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Tiddlywiki&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://joplinapp.org/desktop/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Joplin&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://notable.app/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Notable&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Here are the features I think you should absolutely want:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Quick creation of links to notes in the wiki&lt;/strong&gt;: All of these tools support it.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Open format for notes&lt;/strong&gt;: A Zettelkasten is a long-time effort, you don&amp;rsquo;t want to lose all your knowledge because the company died.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Reasonable text editor&lt;/strong&gt;: Particularly, it should be easy to attach images to notes.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Notes in one place&lt;/strong&gt;: I want all my notes (with attached media) to be in one directory (Zettlr was a bit weak on that side).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Additionally, some features you might want:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Both Desktop &amp;amp; Mobile&lt;/strong&gt;: I haven&amp;rsquo;t found a tool which was fully satisfactory on that side.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Cloud synchronization&lt;/strong&gt;: I also haven&amp;rsquo;t found a tool that was perfect on that side either, and different people have different needs. Nerds want to use git, non-nerds prefer Dropbox&amp;hellip;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The one I ended up choosing was Zim, its look and feel is a bit 90&amp;rsquo;s,
+bit it just works beautifully. Zim was not built with the Zettelkasten
+in mind, but it&amp;rsquo;s flexible enough to allow me to implement a
+Zettelkasten with it. Joplin is also a mature project, although it&amp;rsquo;s
+interface now feels a bit bloated (something Zim&amp;rsquo;s developers managed
+to avoid). Zettlr has a more modern look but I find its minimalism can
+be detrimental to usability. My friend uses Notable which has a more
+modern interface too, so it might be a good choice.&lt;/p&gt;
+&lt;p&gt;As I said, the software is not necessarily the most important. What
+matters is &lt;em&gt;how you do it&lt;/em&gt;. If you&amp;rsquo;re interested in the method,
+I strongly suggest you read &lt;a href=&#34;https://takesmartnotes.com/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;How to Take Smart Notes&lt;/a&gt;
+
+by Sönke Ahrens: The book contains both a good description of the Zettelkasten method.&lt;/p&gt;
+&lt;h2 id=&#34;lastly-dont-sweat-over-it&#34;&gt;Lastly, Don&amp;rsquo;t Sweat Over It&lt;/h2&gt;
+&lt;p&gt;It&amp;rsquo;s of course very tempting to try be perfectionist,
+to get the most benefits from this new method. You can &lt;a href=&#34;https://www.reddit.com/r/Zettelkasten/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;easily find people&lt;/a&gt;
+
+on the Internet who will be eager to help and have opinions to share.
+This &lt;a href=&#34;https://www.lesswrong.com/posts/NfdHG6oHBJ8Qxc26s/the-zettelkasten-method-1&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;&lt;em&gt;very thorough&lt;/em&gt; description of the method on
+LessWrong&lt;/a&gt;
+
+probably has everything you need to get started too.&lt;/p&gt;
+&lt;p&gt;Just remember that having an imperfect Zettelkasten is still &lt;em&gt;much better&lt;/em&gt; than having none.
+In the beginning, your implementation of the method will not be
+perfect, but you have a lifetime to improve it. As I said in the beginning of this
+article, some skills (like writing) come with &lt;em&gt;practice&lt;/em&gt;. You don&amp;rsquo;t
+need more rules, you need to practice to gain experience with your
+note-taking. You will know what works and what doesn&amp;rsquo;t. Eventually,
+you might disagree with the method itself and start changing it to fit
+your own needs, and that&amp;rsquo;s okay too. After all, the first step in
+Niklas Luhmann&amp;rsquo;s impressive academic career was to stop taking notes
+the way people told him to.&lt;/p&gt;
+&lt;h2 id=&#34;further-reading&#34;&gt;Further reading&lt;/h2&gt;
+&lt;p&gt;If you want to read more, here are the books and courses I mentioned
+in this article:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://takesmartnotes.com/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Sönke Ahrens; &lt;em&gt;How to Take Smart Notes&lt;/em&gt;&lt;/a&gt;
+: The most comprehensive book I know about the Zettelkasten.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.coursera.org/learn/learning-how-to-learn&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Barbara Oakley; &lt;em&gt;Learning How to Learn&lt;/em&gt; (on coursera)&lt;/a&gt;
+: A great course about learning.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://wwnorton.com/books/9780393631678&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Gerald Graff, Cathy Birkenstein; &lt;em&gt;They Say / I Say&lt;/em&gt;&lt;/a&gt;
+: Academic Writing without all the boring stuff.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.lesswrong.com/posts/NfdHG6oHBJ8Qxc26s/the-zettelkasten-method-1&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;A description of the method on LessWrong&lt;/a&gt;
+: It&amp;rsquo;s a 41 minutes read, so it&amp;rsquo;s very detailed.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>BLEH!</title>
+      <link>/posts/first-post/</link>
+      <pubDate>Sat, 08 Feb 2020 20:03:58 +0100</pubDate>
+      
+      <guid>/posts/first-post/</guid>
+      <description>&lt;p&gt;Originally, this article was called &amp;ldquo;Hello world&amp;rdquo;. It&amp;rsquo;s a tradition:
+The first program you write in a new programming language just prints
+&amp;ldquo;Hello world!&amp;rdquo;. I&amp;rsquo;m not really fond of traditions, and now that I
+think about it, my first programs usually take the shape of&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;BLEH&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Or some variation of that.&lt;/p&gt;
+&lt;p&gt;So BLEH it is.&lt;/p&gt;
+&lt;p&gt;In a way, the most interesting aspect of starting a blog is that I
+don&amp;rsquo;t even remember hearing the word &amp;ldquo;blog&amp;rdquo; from an actual
+person, recently. It seems most of the people who still use blogs are
+people who are working in the tech industry. Most other people
+use some social medium like Facebook, but even Facebook is getting pretty
+empty these days. Maybe Instagram is more popular?&lt;/p&gt;
+&lt;p&gt;Anyway, for the technical details, this website is hosted on &lt;a href=&#34;https://pages.github.com/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Github pages&lt;/a&gt;
+.
+The website itself is generated using &lt;a href=&#34;https://gohugo.io/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Hugo&lt;/a&gt;
+.
+As for its looks, I used the &lt;a href=&#34;https://themes.gohugo.io/hugo-notepadium/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Notepadium&lt;/a&gt;
+ theme.&lt;/p&gt;
+&lt;p&gt;I personally had a blog on &lt;a href=&#34;https://www.blogger.com/about/?r=1-null_user&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;blogger.com&lt;/a&gt;
+, which apparently
+still exists (the platform, not the blog). I had been wanting to write for a while now, but I didn&amp;rsquo;t want
+to do it on Medium, or Facebook, for two reasons:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Vendor lock-in&lt;/strong&gt;: I suspect this got better with GDPR, but I want to write &amp;ldquo;on my own terms&amp;rdquo; so to speak. If there is something I don&amp;rsquo;t like about the way my website is published, I want to be able to change.
+Having access to the original files of the articles is then really important.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Learning skills and customization&lt;/strong&gt;: I want to learn more about how to set up websites, and I want to be able to have them evolve with time.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;In other words, I want to have more control over the content and its
+presentation. I am not even sure what I want to write about, but it
+seemed like an important step to take to have a setup that satisfies
+me, and having the power to change it. I&amp;rsquo;ll probably talk about programming
+because this is what I do most of my days, probably about technology because
+I am interested in its impact on the world, but most likely, I&amp;rsquo;ll want
+to mention other things.&lt;/p&gt;
+&lt;p&gt;Anyway, welcome!&lt;/p&gt;
+</description>
+    </item>
     
   </channel>
 </rss>

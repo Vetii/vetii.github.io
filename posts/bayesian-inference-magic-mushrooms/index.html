@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.99.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>Bayesian Inference, Choosing Priors, and Magic Mushrooms&nbsp;&ndash;&nbsp;L&#39;Inertie de la carafe</title><link rel="stylesheet" href="/css/core.min.5dc24f8f7e70175a3f03a33f9ba5542147dd15d17a1bec87df43faa3158d252a10f75e7430e864a5ab8911057ae75578.css" integrity="sha384-XcJPj35wF1o/A6M/m6VUIUfdFdF6G&#43;yH30P6oxWNJSoQ9150MOhkpauJEQV651V4"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Bayesian Inference, Choosing Priors, and Magic Mushrooms" /><script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false }
+            ]
+        });
+    });
+</script>
+
+<body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/logo.jpg" alt /><span class="site name">L'Inertie de la carafe</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/posts">Posts</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Bayesian Inference, Choosing Priors, and Magic Mushrooms</h1><p class="article date">2023-01-22</p></section><article class="article markdown-body"><p>There is a nice documentary on Netflix, called <em>Fantastic Fungi</em>. It&rsquo;s about mushrooms. It describes how mushrooms live, and how they can be used for different things.
+A particular use of mushrooms is described in more detail in the movie, which is the use of psilocybin (an hallucinogenic) in the treatment of depression. Impressively, test subjects and scientists describe that one single high dose of psilocybin led them to a mystical experience that they rated as one of the most significant in their lives [1]. They rank is as high as the birth of their first child, or the death of their parents.</p>
+<p>The effects on well being seem to be astonishing. They show people who are being treated for cancer explain with a large smile that they&rsquo;re not afraid of death anymore. One scientist explains that this happens after a <em>single</em> dose.</p>
+<p>I was intrigued. And when I&rsquo;m intrigued, I go on <a href="https://en.wikipedia.org/wiki/Psilocybin#Adverse_effects"target="_blank" rel="noopener noreferrer">wikipedia</a>
+. There, I see the following figure:</p>
+<p><img  src="./800px-Drug_danger_and_dependence-no_title.svg.png"
+        alt="Drug danger and dependence"/></p>
+<p>It seems psilocybin is <em>far</em> less addictive and less dangerous that legal drugs, like caffeine and alcohol. But the lethal dose only tells you about death. I don&rsquo;t know how to interpret this plot: if LSD is dangerous enough to be illegal, how come alcohol is not?</p>
+<p>Well, death is easy to measure, but the lethal dose is a low bar to pass. It doesn&rsquo;t tell you if you will lose your mind. What are the risks <em>besides</em> death?</p>
+<p>As one might expected, there&rsquo;s a lot of shaky information about recreational drugs on the internet (that&rsquo;s one problem of making something illegal, not much research is available). But I did find that the French government runs a <a href="https://www.ofdt.fr/"target="_blank" rel="noopener noreferrer">research group</a>
+ on recreational drug use of French people. I&rsquo;m sure other countries do it too, but since I&rsquo;m French, I looked there.</p>
+<p>In a pretty interesting report [2], the researchers report on pretty scary stories. One user reported going completely blind for a while. Another reported spending <em>eleven days</em> stuck in a horrific world, until he got hit by a (very real) car.</p>
+<p>However, users also report having higher empathy, and saying that it helped them communicate with others, which is pretty consistent other studies say [3] and with what we&rsquo;ve seen in <em>Fantastic Fungi</em>.</p>
+<p>Now, those reports are about hallucinogens in general, which includes different molecules, which I presume, have different effects. Regardless, the users report a common fear, which is that of &ldquo;getting stuck&rdquo; with hallucinations forever. A disorder known as hallucinogen persisting perception disorder (HPPD). Wikipedia reports that some user get it after a <em>single use</em>. Which doesn&rsquo;t sound great.</p>
+<p>The wikipedia page on HPPD states that HPPD is under-researched. However, I did find a study on HPPD which seemed serious. They tried different hallucinogens on 142 people, and did not find a single case of HPPD, however, 13 users reported flashbacks, which are hallucinations that start, even after the effects of the drug have disappeared.</p>
+<p>This is when I have to tell you that this long intro was all an excuse to do statistics. I have the following questions:</p>
+<ol>
+<li>What&rsquo;s the probability of getting HPPD?</li>
+<li>What about flashbacks?</li>
+<li>How much did we learn from the study?</li>
+</ol>
+<p>To answer that, we&rsquo;ll use a statistical tool called the Beta-binomial model. It will give us things that the original study doesn&rsquo;t. For example, the scientists report that they don&rsquo;t have a lot of samples, so their report of 9% of cases of flashbacks should be taken with a grain of salt. The beta-binomial model instead gives us a way to quantify how <em>certain</em> we are about that number.</p>
+<p>To understand this, you should know what a probability distribution is, and know a bit of programming.</p>
+<p>Before we start, here are the papers I used in the intro:</p>
+<ol>
+<li>Griffiths, Roland R., et al. &ldquo;Mystical-type experiences occasioned by psilocybin mediate the attribution of personal meaning and spiritual significance 14 months later.&rdquo; Journal of psychopharmacology 22.6 (2008): 621-632.</li>
+<li>FRANCE, E. N. USAGES CONTEMPORAINS DE PLANTES ET CHAMPIGNONS HALLUCINOGÈNES. 2006.</li>
+<li>MacLean KA, Johnson MW, Griffiths RR. Mystical experiences occasioned by the hallucinogen psilocybin lead to increases in the personality domain of openness. J Psychopharmacol. 2011;25(11):1453-1461. doi:10.1177/0269881111420188</li>
+</ol>
+<p>We will look in more detail at the following paper.</p>
+<p><em>Müller, F., Kraus, E., Holze, F. et al. Flashback phenomena after administration of LSD and psilocybin in controlled studies with healthy participants. Psychopharmacology 239, 1933–1943 (2022). <a href="https://doi.org/10.1007/s00213-022-06066-z"target="_blank" rel="noopener noreferrer">https://doi.org/10.1007/s00213-022-06066-z</a>
+</em></p>
+<h1 id="müller-et-al-study">Müller et al. study.</h1>
+<p>Before we start, here is <a href="https://www.youtube.com/watch?v=xOhKU9a3RBI"target="_blank" rel="noopener noreferrer">some music</a>
+ to get you in the mood.</p>
+<h2 id="what-they-say">What They Say</h2>
+<p>The authors  make a difference between &ldquo;flashbacks&rdquo; and HPPD. Flashbacks are &ldquo;episodic reccurences of drug effects after the acute pharmacological effects have subsided&rdquo;. While HPPD is defined as &ldquo;persisting flashback phenomena which cause clinically significant distress&rdquo;. They say that for most of the people who experienced flashbacks, the effects were not distressing, and so are not considered HPPD.</p>
+<p>They say their studies are placebo-controlled, but they never mention the rate of flashbacks among the control group. They are re-using data from other studies, which I think were placebo controlled, but I think that here, we only consider people who did take the drugs.</p>
+<h2 id="methods">Methods</h2>
+<p>Müller et al. ran <em>other</em> studies on the topic, but it seems that they asked them questions about flashbacks every time. So the population of test subjects is composed of different groups. The cocktail of drugs they took and the quantities also varied between groups.</p>
+<ul>
+<li>142 healthy subjects</li>
+<li>60 received LSD</li>
+<li>27 received LSD + MDMA + D-amphetamine (that must be quite an afternoon)</li>
+<li>31 received LSD + psilocybin</li>
+<li>25 received psilocybin + escitalopram</li>
+</ul>
+<h2 id="results">Results</h2>
+<ul>
+<li>They did not find a single person with HPPD. But since the sample is small and the disorder is rare, that&rsquo;s not too surprising (we&rsquo;ll come back to that!)</li>
+<li>13 out of 142 reported flashbacks.</li>
+<li>Most of the test subjects reported the flashbacks were pleasant.</li>
+<li>Flashbacks with LSD: 7</li>
+<li>Flashbacks with psilocybin: 2</li>
+<li>Flashbacks with both: 4</li>
+</ul>
+<h1 id="bayesian-inference">Bayesian Inference</h1>
+<p>We&rsquo;re interested in the probability $p$ of getting flashbacks, given that we took hallucinogens.
+So it will be a number between 0.0 and 1.0. I&rsquo;m gonna call it <em>incidence</em>, though, to make a clear distinction between the probabilities in the stats sense, and proportion of halluginogens users who will get flashbacks, which is the medical question.</p>
+<p>To study this incidence, we will use Bayesian Inference, I know people are not too familiar with that. So I&rsquo;ll try to explain what it is. But the catchphrase is that Bayesian inference is about how to make math change its mind.</p>
+<p>To do Bayesian inference, we need two things:</p>
+<ul>
+<li>The prior: Our current knowledge about this incidence, before we see what the study says.</li>
+<li>The likelihood: The probability of observing $n$ people with flashbacks, given:
+<ul>
+<li>you have a sample of $N$ people who took hallucinogens,</li>
+<li>the incidence of get flashbacks is $p$.</li>
+</ul>
+</li>
+</ul>
+<p>What you get as an output is a distribution over the values that $p$ can take. This is called the <em>posterior</em> distribution of $p$. It&rsquo;s a distribution over <em>plausible</em> values of $p$, which match your prior, and the data that you gathered.</p>
+<p>So, why are they called &ldquo;prior&rdquo; and &ldquo;posterior&rdquo;?
+&ldquo;Prior&rdquo; comes from a latin word that means &ldquo;before&rdquo;. It&rsquo;s the probability of the quantity we&rsquo;re trying to estimate, <em>before</em> seeing the data.
+&ldquo;Posterior&rdquo; comes from a latin word that means &ldquo;after&rdquo;. It&rsquo;s also a probability distribution over the quantity we&rsquo;re trying to estimate, but this time, <em>after</em> doing the study.</p>
+<h2 id="likelihood">Likelihood</h2>
+<p>Let&rsquo;s start with the likelihood. I will talk about the prior later.
+We&rsquo;re trying to estimate the incidence of flashbacks <em>in general</em>. To estimate that, we have a number of people, and see how many got flashbacks. The likelihood takes the problem backwards. If I had 100 people and knew the incidence is 5%, how many positive cases would I see?</p>
+<p>This probability seems like it&rsquo;s the <em>opposite</em> of what we&rsquo;re looking for, but it&rsquo;s still interesting, because we can try different values of $p$, and see how well it fits the data that we saw!
+Let&rsquo;s imagine we know that $p = 5%$. That means that if we took 100 people, we would probably <em>around</em> 5 people. But seeing 4, or 6, is still somewhat plausible, right?
+There is a probability distribution for that, it&rsquo;s called the binomial distribution.</p>
+<p>The binomial distribution is the distribution of successes given:</p>
+<ol>
+<li>The number of trials</li>
+<li>The number of successes</li>
+</ol>
+<p>In our case, a success is more of a failure (you get flashbacks). But the math works regardless.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> Distributions, StatsPlots
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>plot(Binomial(<span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">0.05</span>), label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;low incidence&#34;</span>, xrange<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">50</span>),
+</span></span><span style="display:flex;"><span>     w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>plot!(Binomial(<span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">0.25</span>), label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;high incidence&#34;</span>, xrange<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">50</span>),
+</span></span><span style="display:flex;"><span>     w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span></code></pre></div><p><img  src="output_8_0.svg"
+        alt="svg"/></p>
+<p>The plots above show that if the incidence of flashbacks was low (5%, in blue), we would see between 0 and 10 cases of flashbacks in our sample of 100 people. If it was 25% (in orange) instead, we would see (approximately) between 15 and 40 people in our sample of a 100.</p>
+<p>What&rsquo;s important to notice is that even if the real rate was exactly 5%, we wouldn&rsquo;t observe <em>exactly</em> 5 people in our sample of a 100. <em>How many</em> people you use in your sample is also important. That&rsquo;s why studies with more people have more weight.</p>
+<h1 id="pseudo-bayesian-approach">Pseudo-Bayesian Approach</h1>
+<p>Müller et al did something similar to what we did above. They did not record a single case of HPPD, so they tried different values of $p$ and measured the probability of seeing zero cases.</p>
+<p>We know the number of trials is 142 (that&rsquo;s the number of people they tested), and that the number of positive cases was zero. We&rsquo;ll vary $p$, and the binomial distribution will tell us how well the information matches.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>incidences <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0.01</span>, <span style="color:#ae81ff">0.02</span>, <span style="color:#ae81ff">0.03</span>, <span style="color:#ae81ff">0.04</span>, <span style="color:#ae81ff">0.05</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> p_hppd <span style="color:#66d9ef">in</span> incidences
+</span></span><span style="display:flex;"><span>    expected_positives <span style="color:#f92672">=</span> Binomial(<span style="color:#ae81ff">142</span>, p_hppd)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    probability <span style="color:#f92672">=</span> pdf(expected_positives, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    println(<span style="color:#e6db74">&#34;incidence = </span><span style="color:#e6db74">$</span>(round(p_hppd, digits<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>))<span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34; &#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;likelihood = </span><span style="color:#e6db74">$</span>(round(probability, digits<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>))<span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><pre><code>incidence = 0.01 likelihood = 0.24
+incidence = 0.02 likelihood = 0.057
+incidence = 0.03 likelihood = 0.013
+incidence = 0.04 likelihood = 0.003
+incidence = 0.05 likelihood = 0.001
+</code></pre>
+<p>We can see that the likelihood of seeing zero cases is higher for $p = 1%$ than for the higher values.</p>
+<p>The values themselves aren&rsquo;t super important, it&rsquo;s their <em>order</em> that we mostly care about.</p>
+<p>We can go further and try that for any incidence between 0% and 100%.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>incidences <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0.001</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1.0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ps_hppd <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> p_hppd <span style="color:#66d9ef">in</span> incidences
+</span></span><span style="display:flex;"><span>    expected_positives <span style="color:#f92672">=</span> Binomial(<span style="color:#ae81ff">142</span>, p_hppd)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    append!(ps_hppd, pdf(expected_positives, <span style="color:#ae81ff">0</span>))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>plot(incidences, ps_hppd,
+</span></span><span style="display:flex;"><span>    xrange<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">0.10</span>), xlabel<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;incidence&#34;</span>, ylabel<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;likelihood&#34;</span>,
+</span></span><span style="display:flex;"><span>    fill<span style="color:#f92672">=</span>true,
+</span></span><span style="display:flex;"><span>    label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;HPPD&#34;</span>)
+</span></span></code></pre></div><p><img  src="output_15_0.svg"
+        alt="svg"/></p>
+<p>What this plot says is that the incidence of zero matches really well the data, while an incidence of 0.01 matches the data a bit less well, and as we increase the incidence, it matches less and less well our data.
+As soon as the incidence passes above 3%, this graph says that it&rsquo;s very unlikely that we would have seen zero case of HPPD. So what this tells us, is that the incidence of HPPD is probably less than 3%. If it was higher than that, <em>we would have seen cases</em>.</p>
+<p>We can do the same for flashbacks!
+Müller et al observed 13 people who reported having flashbacks. We&rsquo;ll try different values of $p$ and see how well that matches our data of 13 people / 142.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>incidences <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0.001</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1.0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ps_flashbacks <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> p_flashback <span style="color:#66d9ef">in</span> incidences
+</span></span><span style="display:flex;"><span>    expected_positives <span style="color:#f92672">=</span> Binomial(<span style="color:#ae81ff">142</span>, p_flashback)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    append!(ps_flashbacks, pdf(expected_positives, <span style="color:#ae81ff">13</span>))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>plot(incidences, ps_flashbacks <span style="color:#f92672">./</span> sum(ps_flashbacks) <span style="color:#f92672">*</span> <span style="color:#ae81ff">1000</span>,
+</span></span><span style="display:flex;"><span>     xrange<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">0.30</span>),
+</span></span><span style="display:flex;"><span>     xlabel<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;incidence&#34;</span>,
+</span></span><span style="display:flex;"><span>     ylabel<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;likelihood&#34;</span>,
+</span></span><span style="display:flex;"><span>     fill<span style="color:#f92672">=</span>true,
+</span></span><span style="display:flex;"><span>     label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;flashbacks&#34;</span>)
+</span></span><span style="display:flex;"><span>vline!([<span style="color:#ae81ff">0.092</span>], label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Müller&#39;s reported incidence&#34;</span>, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;black&#34;</span>, w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span></code></pre></div><p><img  src="output_19_0.svg"
+        alt="svg"/></p>
+<p>Now, we see that an incidence of <em>zero</em> percent is not possible, since we did see some cases.
+A rate of between 5% and 15% is more plausible!</p>
+<p>Müller reports 9% of cases of flashbacks (in black). It&rsquo;s not surprising our likelihood peaks around 9%, that just means that the math works. However, the difference is that Müller et al. report a <em>single</em> number, while we can report an interval (5 to 15% are plausible).</p>
+<h2 id="how-likelihood-changes">How Likelihood Changes</h2>
+<p>In Müller et al&rsquo;s study, they tried several different drugs. The problem is that they have a different number of people, and a different number of cases, for each. How can we compare these numbers?</p>
+<p>Müller et al&rsquo;s report that 60 subjects were given LSD, and 27 were given LSD + MDMA and D-amphetamine, so 87 subjects in total. In table 1 in the paper, they list 6 studies, and summing the number of subjects for each study, I also find 87 subjects. However, later in the paper, the authors report 90 subjects took LSD. They also report that they found 7 cases of flashbacks after taking LSD, and they say it amounts for 7.8% of the sample, which matches with 90 people. I&rsquo;ll use 87.</p>
+<p>Here are the numbers.</p>
+<ol>
+<li>LSD: 87 (90?) subjects, 7 flashbacks</li>
+<li>Psilocybin: 24 subjects, 2 flashbacks</li>
+<li>LSD + Psilocybin: 28 subjects, 4 flashbacks.</li>
+</ol>
+<p>We will plot three different likelihoods, to see how they change with the number of subjects and cases.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> likelihood(incidences, total_subjects, number_cases)
+</span></span><span style="display:flex;"><span>    ps_flashbacks <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> p_flashback <span style="color:#66d9ef">in</span> incidences
+</span></span><span style="display:flex;"><span>        expected_positives <span style="color:#f92672">=</span> Binomial(total_subjects, p_flashback)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        append!(ps_flashbacks, pdf(expected_positives, number_cases))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># I will normalize the vector, to make different values easier to compare.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ps_flashbacks <span style="color:#f92672">./</span> sum(ps_flashbacks) <span style="color:#f92672">*</span> length(ps_flashbacks)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>incidences <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0.001</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0.4</span>
+</span></span><span style="display:flex;"><span>lik_lsd <span style="color:#f92672">=</span> likelihood(incidences, <span style="color:#ae81ff">87</span>, <span style="color:#ae81ff">7</span>)
+</span></span><span style="display:flex;"><span>lik_psilo <span style="color:#f92672">=</span> likelihood(incidences, <span style="color:#ae81ff">24</span>, <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>lik_both <span style="color:#f92672">=</span> likelihood(incidences, <span style="color:#ae81ff">28</span>, <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plot(incidences, lik_lsd, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;LSD&#34;</span>,
+</span></span><span style="display:flex;"><span>     w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>,
+</span></span><span style="display:flex;"><span>     xlabel<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;incidence&#34;</span>,
+</span></span><span style="display:flex;"><span>     ylabel<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;density&#34;</span>)
+</span></span><span style="display:flex;"><span>plot!(incidences, lik_psilo, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Psilocybin&#34;</span>, w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>plot!(incidences, lik_both, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;LSD + Psilocybin&#34;</span>, w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span></code></pre></div><p><img  src="output_22_0.svg"
+        alt="svg"/></p>
+<p>What does this plot show us?</p>
+<p>First, As you have more test subjects, your estimate of the plausible valies of the incidence get more precise. The curve for LSD (blue) is narrower than the curve for Psilocybin (red): Since psilocybin was tested on 24 subjects, we learned less about the incidence of flashbacks for psilocybin than for LSD (which was tested on 87 subjects).</p>
+<p>Second, It seems that flashbacks are more likely when taking LSD + psilocybin than when taking psilocybin alone: The green curve seems shifted to the right (higher incidence). We can see that even though the estimates are quite imprecise.</p>
+<h1 id="bayesian-inference-1">Bayesian Inference</h1>
+<p>So far, we&rsquo;ve looked at the data in the study. What about other studies? Maybe this particular study is flawed! Because yes, scientists also make mistakes. Science works much better when many different scientists do the same studies. It&rsquo;s very rare that different groups of scientists all make the same mistakes.</p>
+<p>It would be great if we could add information from what other researchers have found on the topic, and see how it agrees with the existing work.</p>
+<p>This is when Bayesian inference comes in. It allows us to add some information that we take from somewhere else, and mix it with the likelihood that we just worked with.</p>
+<p>To do this, we&rsquo;ll use priors.</p>
+<p>To do the math, I&rsquo;ll use Turing. It&rsquo;s a julia library that&rsquo;s very convenient for doing these kinds of things.
+You don&rsquo;t necessarily have to use Turing for this specific model (because the math works very well). However, if you have more complex models, the Turing code would look pretty much the same (even when the math would be much more difficult).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> Turing
+</span></span></code></pre></div><h1 id="the-beta-binomial-model">The Beta-Binomial Model</h1>
+<p>We need a prior distribution for the plausible values of $p$ <em>before we look at Müller et al&rsquo;s data</em>.
+When your likelihood is a binomial distribution, one prior that is convenient is the Beta distribution. It has two parameters, $\alpha$ and $\beta$.
+It&rsquo;s a distribution over numbers between 0 and 1, and it makes the math work very well.
+So, we will use a beta prior, and a binomial likelihood.
+Then, Turing will work, and give us a distribution for the value of $p$, that matches <em>both</em> our data, and the related work.</p>
+<ul>
+<li>The likelihood is a Binomial distribution, with unknown parameter $p$, so we need a prior for it.</li>
+<li>The prior for $p$ is a Beta distribution, with parameters $\alpha$ and $\beta$.</li>
+</ul>
+<p>You have to make a choice of $\alpha$ and $\beta$. We&rsquo;ll see two methods to do that.</p>
+<h2 id="including-related-work">Including Related Work</h2>
+<p>Bayesians argue that one positive aspect of Bayesian inference is that it provides a principled way to include related work. We can use it to set your priors.</p>
+<p>But some statisticians are not happy with priors. They would argue that this &ldquo;prior information&rdquo; is dangerous, because who decides how you defined your priors? With priors, you can make the stats say whatever you like!</p>
+<p>So far, the answer that I obtained from Bayesians ranges from &ldquo;it&rsquo;s complicated&rdquo; to &ldquo;pick up something reasonable&rdquo;. But Müller et al do mention other studies, and they <em>give numbers</em>.
+Estimates range between 15 and 75% of all users. Personally, I don&rsquo;t think anybody would take these things if the probability of getting HPPD was of 75%, but maybe they mean 75% of users have experienced flashbacks?
+The DSM-V reports a prevalence of 4.2% among users of hallucinogens. That&rsquo;s lower than the 9% that Müller et al found. <em>How can I use these numbers in my stats?</em></p>
+<p>In my case, the problem are the parameters of my beta distribution ($\alpha$ and $\beta$).
+It took me a long to find a method on <em>how</em> to do that.
+The trick is: related work is just <em>more data</em>.</p>
+<p>To show how that works, I&rsquo;ll start with a prior that I did pull from my hat. And then we&rsquo;ll see how I can use the numbers in Müllers study.</p>
+<h1 id="pulling-a-prior-from-your-hat">Pulling A Prior From Your Hat</h1>
+<p>I&rsquo;m gonna start with Beta(1,10) as a prior, and to be honest it&rsquo;s not terribly realistic.
+But at least you can see the code you can use to run this things. We&rsquo;ll still get a posterior.
+We will then plot the prior, likelihood and posterior with each other. The three things are three estimates of the same quantity (the incidence of flashbacks), but the three methods give different results.</p>
+<ul>
+<li>Again, we choose the prior. It&rsquo;s our belief about how often flashbacks happen.</li>
+<li>The likelihood will give us incidences that match well the observed data.</li>
+<li>The posterior is a compromise between the two (using Bayes&rsquo; rule)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>plot(Beta(<span style="color:#ae81ff">1.0</span>, <span style="color:#ae81ff">10.0</span>), label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Prior&#34;</span>, xlabel<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;incidence&#34;</span>, w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, fill<span style="color:#f92672">=</span>true)
+</span></span></code></pre></div><p><img  src="output_31_0.svg"
+        alt="svg"/></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span><span style="color:#a6e22e">@model</span> <span style="color:#66d9ef">function</span> binomial_model(number_people, number_flashbacks)
+</span></span><span style="display:flex;"><span>    p <span style="color:#f92672">~</span> Beta(<span style="color:#ae81ff">1.0</span>, <span style="color:#ae81ff">10.0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    number_flashbacks <span style="color:#f92672">~</span> Binomial(number_people, p)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><pre><code>binomial_model (generic function with 2 methods)
+</code></pre>
+<p>For this example, I&rsquo;ll use the data for psilocybin only, because that makes it easier to see differences between posterior and likelihood.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span><span style="color:#75715e"># Inference</span>
+</span></span><span style="display:flex;"><span>chain_simple_prior <span style="color:#f92672">=</span> sample(binomial_model(<span style="color:#ae81ff">24</span>, <span style="color:#ae81ff">2</span>),
+</span></span><span style="display:flex;"><span>    NUTS(<span style="color:#ae81ff">0.65</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">10000</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Plotting</span>
+</span></span><span style="display:flex;"><span>plot(Beta(<span style="color:#ae81ff">1.0</span>, <span style="color:#ae81ff">10.0</span>), xrange<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">0.5</span>), label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;prior&#34;</span>, w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>plot!(<span style="color:#ae81ff">0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0.001</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1.0</span>, likelihood(<span style="color:#ae81ff">0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0.001</span><span style="color:#f92672">:</span><span style="color:#ae81ff">1.0</span>, <span style="color:#ae81ff">24</span>, <span style="color:#ae81ff">2</span>), label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;likelihood&#34;</span>, w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>density!(chain_simple_prior[<span style="color:#e6db74">:p</span>], label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;posterior&#34;</span>, w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span></code></pre></div><p><img  src="output_35_0.svg"
+        alt="svg"/></p>
+<p>You can see that the posterior (in green) has roughly the same shape as the likelihood (in red), but that it&rsquo;s shifted to the right. This shift comes from the prior (in blue).</p>
+<p>I see a lot of papers who complain that their results are not very valid, because they don&rsquo;t have a lot of data. This is when Bayesian inference is very nice, because as you add more data, the likelihood becomes more and more precise, and the priors &ldquo;wash out&rdquo;. But if you don&rsquo;t have a lot, you still get <em>something</em>. The minimum number of data points you need is 1.</p>
+<p>You may wonder why the curve of the posterior is a bit wonky. That is because Turing computes an approximation. It returns a list of plausible values of $p$, in a list. It&rsquo;s not perfectly what the math would suggest. But in many cases, the math would be impossible to do. So we use that for now.</p>
+<h2 id="a-better-prior">A Better Prior</h2>
+<p>Looking at the posterior, we could say &ldquo;the incidence of flashbacks is between 0 and 25%&rdquo;. Some critics my decide that my posterior looks like that, just because my prior was the curve in blue. If it was different, I would have a different result. How do I justify that?</p>
+<p>To make things better, I&rsquo;m gonna use the numbers I saw in Müller et al&rsquo;s study.</p>
+<p>Since I&rsquo;m looking for a way to pick the parameters $\alpha$ and $\beta$ of my Beta distribution. We&rsquo;ll just use the exact same technique. But this time, I&rsquo;m trying to estimate $\alpha$ and $\beta$, based on estimates for $p$ that the study listed.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span><span style="color:#75715e"># We make a model for the prior work.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@model</span> <span style="color:#66d9ef">function</span> model_prior_work()
+</span></span><span style="display:flex;"><span>    α <span style="color:#f92672">~</span> Exponential(<span style="color:#ae81ff">1.0</span>)
+</span></span><span style="display:flex;"><span>    β <span style="color:#f92672">~</span> Exponential(<span style="color:#ae81ff">1.0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># RELATED WORK</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Source: Studerus</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.1</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Stanton and Bardoni</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.23</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Vizeli and Liechti (MDMA)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.065</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># DSM-V</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.042</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Someone suggested 15% (Hermle et al?)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.15</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Someone suggested 75% (wat) (Martinotti et al?)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.75</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># What p would we get, if we looked only at the prior work?</span>
+</span></span><span style="display:flex;"><span>    p <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> p
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><pre><code>model_prior_work (generic function with 2 methods)
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>chain_prior <span style="color:#f92672">=</span> sample(model_prior_work(), NUTS(<span style="color:#ae81ff">0.65</span>), <span style="color:#ae81ff">10000</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># We can get the estimates of p with the &#34;generated quantities&#34; function</span>
+</span></span><span style="display:flex;"><span>ps <span style="color:#f92672">=</span> generated_quantities(model_prior_work(), chain_prior);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># And now we plot the distribution with related work estimate</span>
+</span></span><span style="display:flex;"><span>density(ps <span style="color:#f92672">|&gt;</span> vec, xrange<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">1.0</span>), label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Estimate of p with related work&#34;</span>, w<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>,  fill<span style="color:#f92672">=</span>true)
+</span></span><span style="display:flex;"><span>related_work <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0.1</span>, <span style="color:#ae81ff">0.23</span>, <span style="color:#ae81ff">0.065</span>, <span style="color:#ae81ff">0.042</span>, <span style="color:#ae81ff">0.15</span>, <span style="color:#ae81ff">0.75</span>]
+</span></span><span style="display:flex;"><span>vline!(related_work, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;related work estimates&#34;</span>, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;black&#34;</span>, w<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)
+</span></span></code></pre></div><p><img  src="output_41_0.svg"
+        alt="svg"/></p>
+<p>That&rsquo;s a very strange distribution! What we see, though, is that it leaves room for the higher estimates!</p>
+<h1 id="tying-it-all-together">Tying It All Together</h1>
+<p>We can include the related work evidence directly in our statistical model. To do that, our prior for the incidence (the Beta distribution) will have parameters that we&rsquo;re also trying to estimate. These, <em>will have priors too</em>. These are called <em>hyper-priors</em>. The model has three parts:</p>
+<ul>
+<li>The likelihood is a Binomial distribution, with unknown parameter $p$, so we need a prior for it.</li>
+<li>The prior for $p$ is a Beta distribution, but it has unknown parameters $\alpha$ and $\beta$, so we need priors for these too.</li>
+<li>We&rsquo;ll add the related work as evidence, to estimate $\alpha$ and $\beta$.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span><span style="color:#a6e22e">@model</span> <span style="color:#66d9ef">function</span> model_with_prior_work(total_n, cases_n)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># I wasn&#39;t sure how to set these values, so I&#39;ll estimate them too!</span>
+</span></span><span style="display:flex;"><span>    α <span style="color:#f92672">~</span> Exponential(<span style="color:#ae81ff">1.0</span>)
+</span></span><span style="display:flex;"><span>    β <span style="color:#f92672">~</span> Exponential(<span style="color:#ae81ff">1.0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># RELATED WORK</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Source: Studerus</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.1</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Stanton and Bardoni</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.23</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Vizeli and Liechti (MDMDA)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.065</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># DSM-V</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.042</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Someone suggested 15% (Hermle et al?)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.15</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Someone suggested 75% (wat)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.75</span> <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># THE CURRENT STUDY</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># We use α and β from with more info from the related work</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># to get a probability of HPPD, called p.</span>
+</span></span><span style="display:flex;"><span>    p <span style="color:#f92672">~</span> Beta(α, β)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cases_n <span style="color:#f92672">~</span> Binomial(total_n, p)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>Now I&rsquo;ll use the data for the full study.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>chain_2 <span style="color:#f92672">=</span> sample(model_with_prior_work(<span style="color:#ae81ff">142</span>, <span style="color:#ae81ff">13</span>), NUTS(<span style="color:#ae81ff">0.65</span>), <span style="color:#ae81ff">10000</span>)
+</span></span></code></pre></div><h1 id="how-much-did-we-learn">How Much Did We Learn?</h1>
+<p>I think we can use the posterior, to estimate how much we learned from the study,
+I&rsquo;ll plot the two estimates of $p$ together.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>density(ps <span style="color:#f92672">|&gt;</span> vec, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Related work only&#34;</span>, fill<span style="color:#f92672">=</span>true)
+</span></span><span style="display:flex;"><span>density!(chain_2[<span style="color:#e6db74">:p</span>], label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Related work with current study&#34;</span>,
+</span></span><span style="display:flex;"><span>         xrange<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">1.0</span>),
+</span></span><span style="display:flex;"><span>         fill<span style="color:#f92672">=</span>true)
+</span></span><span style="display:flex;"><span>vline!(related_work, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;black&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;related work estimates&#34;</span>, w<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)
+</span></span></code></pre></div><p><img  src="output_48_0.svg"
+        alt="svg"/></p>
+<p>The orange distribution is much narrower, so we&rsquo;ve made big progress! For example, that means that we rejected the work that said that the incidence of flashbacks was roughly 75%.</p>
+<h1 id="how-to-report-your-posterior">How To Report Your Posterior</h1>
+<p>This model is convenient because you don&rsquo;t have to report a big list of numbers. It&rsquo;s just a beta distribution with two numbers.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>estimated_posterior <span style="color:#f92672">=</span> fit(Beta, chain_2[<span style="color:#e6db74">:p</span>])
+</span></span></code></pre></div><pre><code>Beta{Float64}(α=13.751132773589656, β=131.45206487743914)
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span>plot(estimated_posterior, w<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;beta distribution with fitted parameters&#34;</span>)
+</span></span><span style="display:flex;"><span>density!(chain_2[<span style="color:#e6db74">:p</span>], xrange<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">0.25</span>), w<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;bayesian inference posterior&#34;</span>)
+</span></span></code></pre></div><p><img  src="output_52_0.svg"
+        alt="svg"/></p>
+<p>This shows an excellent match between the two. So if someone wants to make a new study on the topic of flashbacks, they can use the Beta distribution above, as a prior. It includes both the related work and the evidence the experiment!</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>With all that stuff, what&rsquo;s the incidence, then?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-julia" data-lang="julia"><span style="display:flex;"><span><span style="color:#75715e"># To get an interval, we can use quantiles of the posterior distribution!</span>
+</span></span><span style="display:flex;"><span>interval_percents <span style="color:#f92672">=</span> quantile(chain_2[<span style="color:#e6db74">:p</span>] <span style="color:#f92672">|&gt;</span> vec, [<span style="color:#ae81ff">0.05</span>, <span style="color:#ae81ff">0.95</span>]) <span style="color:#f92672">*</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>interval <span style="color:#f92672">=</span> round<span style="color:#f92672">.</span>(interval_percents)
+</span></span></code></pre></div><pre><code>2-element Vector{Float64}:
+  6.0
+ 14.0
+</code></pre>
+<p>The incidence of flashbacks when using hallucinogens is between 6% and 14%. Müller et al. report roughly 9%, but we can also see that there is a bit of uncertainty in that number. I will let you decide if 6 to 14% is a high risk to take or not.</p>
+<h1 id="if-youre-bored">If You&rsquo;re Bored</h1>
+<p>If you got interested in the bayesian inference part, Richard McElreath has both <a href="https://youtu.be/guTdrfycW2Q"target="_blank" rel="noopener noreferrer">amazing lectures</a>
+ on the topic, and a <a href="https://xcelab.net/rm/statistical-rethinking/"target="_blank" rel="noopener noreferrer">very nice book about that</a>
+. His book is how I learned all these things.</p>
+<h2 id="exercises">Exercises</h2>
+<ol>
+<li>If you wanted to get a more precise estimate, what would you do?</li>
+<li>This experiment mixes different molecules (psilocybin, LSD, etc.) Can we make a model that makes estimates, for each different molecule?</li>
+</ol>
+</article>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/zettelkasten/"><span class="iconfont icon-article"></span>Map Everything With the Zettelkasten</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">© Noric Couderc 2023</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/&#43;DiW/UqRcLbRjq" crossorigin="anonymous"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l&#43;B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd&#43;qj&#43;o24G5ZU2zJz" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+            onload="renderMathInElement(document.body);"></script></body>
+
+</html>
